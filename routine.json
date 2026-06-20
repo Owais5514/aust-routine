@@ -1,0 +1,31 @@
+{
+  "monday": {
+
+  },
+  "sunday": {
+    "1030": {
+      "course": "EEE 4133",
+      "instructor": "MID",
+      "room": "4A05"
+    },
+    "1120": {
+      "course": "EEE 4135",
+      "instructor": "Siddiquee",
+      "room": "4A05"
+    },
+    "1210": {
+      "course": "EEE 4131",
+      "instructor": "Moed",
+      "room": "4A06"
+    }
+  },
+  "thursday": {
+
+  },
+  "tuesday": {
+
+  },
+  "wednesday": {
+
+  }
+}

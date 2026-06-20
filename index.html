@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>My Class Routine</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Phosphor Icons for UI elements -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        /* Smooth fade-in for dynamic content */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+        /* Custom scrollbar for webkit */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen pb-12 selection:bg-blue-500 selection:text-white">
+
+    <div class="max-w-md mx-auto p-5">
+        
+        <!-- Header / Clock Section -->
+        <header class="text-center py-8 mb-4 border-b border-slate-800 animate-fade-in">
+            <h1 id="time-display" class="text-6xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500 drop-shadow-sm transition-all duration-200">
+                00:00
+            </h1>
+            <p id="am-pm" class="text-xl font-bold text-slate-400 mt-1 uppercase tracking-widest">AM</p>
+            
+            <!-- Date & Date Picker Section -->
+            <div class="mt-5 flex flex-col items-center justify-center space-y-3">
+                <div id="date-selector" class="flex items-center justify-center space-x-2 text-slate-300 relative group cursor-pointer bg-slate-900/60 hover:bg-slate-800 px-4 py-2 rounded-xl transition-colors border border-slate-800">
+                    <i class="ph ph-calendar-blank text-xl"></i>
+                    <p id="date-display" class="text-lg font-medium"></p>
+                    <i class="ph ph-caret-down text-sm text-slate-500 ml-1"></i>
+                    <!-- Hidden native date picker -->
+                    <input type="date" id="date-picker" class="absolute w-0 h-0 opacity-0 overflow-hidden" style="bottom: 0; left: 50%;">
+                </div>
+                
+                <button id="reset-btn" class="hidden text-xs bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 border border-blue-500/30 px-4 py-1.5 rounded-full transition-colors flex items-center space-x-1.5">
+                    <i class="ph ph-arrow-u-down-left font-bold"></i>
+                    <span class="font-semibold tracking-wide">Back to Today</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main id="routine-container" class="space-y-8">
+            <!-- Dynamic content will be injected here by JS -->
+        </main>
+
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        const CLASS_DURATION_MINUTES = 50; 
+
+        let routineData = null; // Will be populated from routine.json or fallback
+
+        const daysOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+        
+        // State variable for manual date selection
+        let manualDate = null;
+
+        // --- HELPER FUNCTIONS ---
+        function timeStringToMinutes(timeStr) {
+            const hours = parseInt(timeStr.substring(0, 2), 10);
+            const mins = parseInt(timeStr.substring(2, 4), 10);
+            return (hours * 60) + mins;
+        }
+
+        function formatTimeStr(timeStr) {
+            let hours = parseInt(timeStr.substring(0, 2), 10);
+            let mins = timeStr.substring(2, 4);
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; 
+            return `${hours}:${mins} ${ampm}`;
+        }
+
+        function getMinutesFromMidnight(date) {
+            return (date.getHours() * 60) + date.getMinutes();
+        }
+
+        // --- MAIN APP LOGIC ---
+
+        function updateApp() {
+            if (!routineData) return; // Don't run if data isn't loaded yet
+
+            const realNow = new Date();
+            const targetDate = manualDate || realNow;
+            
+            // 1. Update Clock Display (Always shows real current time)
+            let hours = realNow.getHours();
+            let minutes = realNow.getMinutes();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; 
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            
+            document.getElementById('time-display').innerText = `${hours}:${minutes}`;
+            document.getElementById('am-pm').innerText = ampm;
+
+            // 2. Update Date Display
+            const options = { weekday: 'long', month: 'long', day: 'numeric' };
+            document.getElementById('date-display').innerText = targetDate.toLocaleDateString('en-US', options);
+
+            // Sync date picker and Reset button
+            const resetBtn = document.getElementById('reset-btn');
+            const datePicker = document.getElementById('date-picker');
+            
+            if (manualDate) {
+                resetBtn.classList.remove('hidden');
+                resetBtn.classList.add('flex');
+            } else {
+                resetBtn.classList.add('hidden');
+                resetBtn.classList.remove('flex');
+                datePicker.value = ''; // Reset input to placeholder state
+            }
+
+            // 3. Process Routine Data
+            const currentDayName = daysOfWeek[targetDate.getDay()];
+            const todaysClassesRaw = routineData[currentDayName] || {};
+            const currentMinutes = getMinutesFromMidnight(realNow);
+
+            // Time comparison logic (Midnight normalization to compare pure dates)
+            const todayMidnight = new Date(realNow.getFullYear(), realNow.getMonth(), realNow.getDate());
+            const targetMidnight = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate());
+            
+            const isToday = targetMidnight.getTime() === todayMidnight.getTime();
+            const isPast = targetMidnight.getTime() < todayMidnight.getTime();
+
+            // Convert object to array and sort by start time
+            let todaysClasses = Object.keys(todaysClassesRaw).map(timeKey => {
+                const classData = todaysClassesRaw[timeKey];
+                const startMins = timeStringToMinutes(timeKey);
+                const endMins = startMins + CLASS_DURATION_MINUTES;
+                return {
+                    id: timeKey,
+                    startTimeStr: formatTimeStr(timeKey),
+                    endTimeStr: formatTimeStr(
+                        String(Math.floor(endMins / 60)).padStart(2, '0') + 
+                        String(endMins % 60).padStart(2, '0')
+                    ),
+                    startMins: startMins,
+                    endMins: endMins,
+                    ...classData
+                };
+            }).sort((a, b) => a.startMins - b.startMins);
+
+            // Categorize classes
+            let ongoingClass = null;
+            let upcomingClasses = [];
+            let endedClasses = [];
+
+            todaysClasses.forEach(cls => {
+                if (isPast) {
+                    // Looking at a past day: everything has ended
+                    endedClasses.push(cls);
+                } else if (!isToday) {
+                    // Looking at a future day: everything is upcoming
+                    upcomingClasses.push(cls);
+                } else {
+                    // Looking at today: compute based on real time
+                    if (currentMinutes >= cls.startMins && currentMinutes < cls.endMins) {
+                        ongoingClass = cls;
+                    } else if (currentMinutes < cls.startMins) {
+                        upcomingClasses.push(cls);
+                    } else {
+                        endedClasses.push(cls);
+                    }
+                }
+            });
+
+            renderRoutine(ongoingClass, upcomingClasses, endedClasses, todaysClasses.length === 0, isToday);
+        }
+
+        // --- UI RENDERING ---
+
+        function createClassCard(cls, status) {
+            let borderClass, bgClass, textClass, icon, statusText;
+
+            if (status === 'ongoing') {
+                borderClass = 'border-l-4 border-blue-500 shadow-blue-900/20 shadow-lg';
+                bgClass = 'bg-slate-800/80';
+                textClass = 'text-blue-400';
+                icon = '<i class="ph ph-spinner-gap animate-spin text-xl"></i>';
+                statusText = 'Happening Now';
+            } else if (status === 'upcoming') {
+                borderClass = 'border-l-4 border-slate-600 shadow-md';
+                bgClass = 'bg-slate-900';
+                textClass = 'text-slate-300';
+                icon = '<i class="ph ph-clock text-xl"></i>';
+                statusText = 'Upcoming';
+            } else {
+                borderClass = 'border-l-4 border-slate-800 opacity-60 grayscale-[50%]';
+                bgClass = 'bg-slate-900/50';
+                textClass = 'text-slate-500';
+                icon = '<i class="ph ph-check-circle text-xl"></i>';
+                statusText = 'Ended';
+            }
+
+            return `
+                <div class="${bgClass} ${borderClass} rounded-r-2xl p-5 transition-all duration-300 transform">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="flex items-center space-x-2 ${textClass} font-semibold text-sm tracking-wide">
+                            ${icon} <span>${statusText}</span>
+                        </div>
+                        <div class="text-xs font-mono bg-slate-950 px-2 py-1 rounded text-slate-400 border border-slate-800">
+                            ${cls.startTimeStr} - ${cls.endTimeStr}
+                        </div>
+                    </div>
+                    <h3 class="text-2xl font-bold text-slate-100 mb-1">${cls.course}</h3>
+                    <div class="flex flex-col space-y-1 mt-3">
+                        <div class="flex items-center text-slate-400 text-sm">
+                            <i class="ph ph-user-circle mr-2 text-lg"></i>
+                            Instructor: <span class="text-slate-200 ml-1 font-medium">${cls.instructor}</span>
+                        </div>
+                        <div class="flex items-center text-slate-400 text-sm">
+                            <i class="ph ph-map-pin mr-2 text-lg"></i>
+                            Room: <span class="text-slate-200 ml-1 font-medium">${cls.room}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderRoutine(ongoing, upcoming, ended, isFreeDay, isToday) {
+            const container = document.getElementById('routine-container');
+            let html = '';
+
+            if (isFreeDay) {
+                html = `
+                    <div class="text-center py-16 animate-fade-in">
+                        <i class="ph ph-coffee text-6xl text-slate-600 mb-4 block"></i>
+                        <h2 class="text-2xl font-semibold text-slate-300">No classes scheduled!</h2>
+                        <p class="text-slate-500 mt-2">Enjoy your free time.</p>
+                    </div>
+                `;
+            } else {
+                // Ongoing
+                if (ongoing) {
+                    html += `
+                        <div class="animate-fade-in">
+                            <h2 class="text-sm uppercase tracking-widest text-slate-500 font-bold mb-3 pl-1">Current</h2>
+                            ${createClassCard(ongoing, 'ongoing')}
+                        </div>
+                    `;
+                }
+
+                // Upcoming
+                if (upcoming.length > 0) {
+                    const headerText = isToday ? "Next Up" : "Scheduled";
+                    html += `
+                        <div class="animate-fade-in" style="animation-delay: 0.1s">
+                            <h2 class="text-sm uppercase tracking-widest text-slate-500 font-bold mb-3 pl-1 mt-6">${headerText}</h2>
+                            <div class="space-y-4">
+                                ${upcoming.map(cls => createClassCard(cls, 'upcoming')).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                // Ended
+                if (ended.length > 0) {
+                    const headerText = isToday ? "Completed Today" : "Completed";
+                    html += `
+                        <div class="animate-fade-in" style="animation-delay: 0.2s">
+                            <h2 class="text-sm uppercase tracking-widest text-slate-600 font-bold mb-3 pl-1 mt-6">${headerText}</h2>
+                            <div class="space-y-3">
+                                ${ended.map(cls => createClassCard(cls, 'ended')).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+
+            if (container.innerHTML !== html) {
+                container.innerHTML = html;
+            }
+        }
+
+        // --- EVENT LISTENERS ---
+
+        document.getElementById('date-selector').addEventListener('click', () => {
+            const picker = document.getElementById('date-picker');
+            try {
+                picker.showPicker();
+            } catch (e) {
+                picker.focus(); // Fallback for older browsers
+            }
+        });
+
+        document.getElementById('date-picker').addEventListener('change', (e) => {
+            if (e.target.value) {
+                // Parse the YYYY-MM-DD string properly into local time
+                const [year, month, day] = e.target.value.split('-');
+                manualDate = new Date(year, month - 1, day);
+            } else {
+                manualDate = null;
+            }
+            updateApp();
+        });
+
+        document.getElementById('reset-btn').addEventListener('click', () => {
+            manualDate = null;
+            updateApp();
+        });
+
+        // Initialize and start loop
+        async function loadDataAndStart() {
+            // Built-in fallback data (prevents preview & local file crashes)
+            const fallbackData = {
+                "monday": {}, "tuesday": {}, "wednesday": {}, "thursday": {}, "friday": {}, "saturday": {},
+                "sunday": {
+                    "1030": { "course": "EEE 4133", "instructor": "MID", "room": "4A05" },
+                    "1120": { "course": "EEE 4135", "instructor": "Siddiquee", "room": "4A05" },
+                    "1210": { "course": "EEE 4131", "instructor": "Moed", "room": "4A06" }
+                }
+            };
+
+            try {
+                // Web environments like the Canvas preview sandbox (blob:) or local file system (file:) 
+                // cannot fetch relative URLs due to security policies. We skip fetch here.
+                const protocol = window.location.protocol;
+                if (protocol === 'blob:' || protocol === 'data:' || protocol === 'file:') {
+                    console.log("Running locally or in preview. Using fallback data to avoid fetch errors.");
+                    routineData = fallbackData;
+                } else {
+                    // Fetch the JSON file from the same directory when hosted on GitHub
+                    const response = await fetch('routine.json');
+                    if (!response.ok) throw new Error('Could not fetch routine.json');
+                    routineData = await response.json();
+                }
+            } catch (error) {
+                console.warn("Error fetching JSON, falling back to default data:", error);
+                routineData = fallbackData;
+            }
+
+            // Start the app logic
+            updateApp();
+            setInterval(updateApp, 10000);
+        }
+
+        loadDataAndStart();
+
+    </script>
+</body>
+</html>
