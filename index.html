@@ -31,7 +31,6 @@
             <h1 id="time-display" class="text-6xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500 drop-shadow-sm transition-all duration-200">
                 00:00
             </h1>
-            <p id="am-pm" class="text-xl font-bold text-slate-400 mt-1 uppercase tracking-widest">AM</p>
             
             <!-- Date & Date Picker Section -->
             <div class="mt-5 flex flex-col items-center justify-center space-y-3">
@@ -60,6 +59,7 @@
     <script>
         // --- CONFIGURATION ---
         const CLASS_DURATION_MINUTES = 50; 
+        const LAB_DURATION_MINUTES = 150; // 2 hours 30 minutes
 
         let routineData = null; // Will be populated from routine.json or fallback
 
@@ -76,12 +76,9 @@
         }
 
         function formatTimeStr(timeStr) {
-            let hours = parseInt(timeStr.substring(0, 2), 10);
+            let hours = timeStr.substring(0, 2);
             let mins = timeStr.substring(2, 4);
-            const ampm = hours >= 12 ? 'PM' : 'AM';
-            hours = hours % 12;
-            hours = hours ? hours : 12; 
-            return `${hours}:${mins} ${ampm}`;
+            return `${hours}:${mins}`;
         }
 
         function getMinutesFromMidnight(date) {
@@ -99,13 +96,10 @@
             // 1. Update Clock Display (Always shows real current time)
             let hours = realNow.getHours();
             let minutes = realNow.getMinutes();
-            const ampm = hours >= 12 ? 'PM' : 'AM';
-            hours = hours % 12;
-            hours = hours ? hours : 12; 
+            hours = hours < 10 ? '0' + hours : hours;
             minutes = minutes < 10 ? '0' + minutes : minutes;
             
             document.getElementById('time-display').innerText = `${hours}:${minutes}`;
-            document.getElementById('am-pm').innerText = ampm;
 
             // 2. Update Date Display
             const options = { weekday: 'long', month: 'long', day: 'numeric' };
@@ -140,7 +134,11 @@
             let todaysClasses = Object.keys(todaysClassesRaw).map(timeKey => {
                 const classData = todaysClassesRaw[timeKey];
                 const startMins = timeStringToMinutes(timeKey);
-                const endMins = startMins + CLASS_DURATION_MINUTES;
+                
+                // Determine duration based on class type
+                const duration = classData.type === 'Lab' ? LAB_DURATION_MINUTES : CLASS_DURATION_MINUTES;
+                const endMins = startMins + duration;
+                
                 return {
                     id: timeKey,
                     startTimeStr: formatTimeStr(timeKey),
@@ -162,17 +160,23 @@
             todaysClasses.forEach(cls => {
                 if (isPast) {
                     // Looking at a past day: everything has ended
+                    cls.renderStatus = 'ended';
                     endedClasses.push(cls);
                 } else if (!isToday) {
                     // Looking at a future day: everything is upcoming
+                    cls.renderStatus = 'upcoming';
                     upcomingClasses.push(cls);
                 } else {
                     // Looking at today: compute based on real time
                     if (currentMinutes >= cls.startMins && currentMinutes < cls.endMins) {
+                        cls.renderStatus = 'ongoing';
                         ongoingClass = cls;
                     } else if (currentMinutes < cls.startMins) {
+                        // Check if it starts in 10 minutes or less
+                        cls.renderStatus = (cls.startMins - currentMinutes <= 10) ? 'upcoming-soon' : 'upcoming';
                         upcomingClasses.push(cls);
                     } else {
+                        cls.renderStatus = 'ended';
                         endedClasses.push(cls);
                     }
                 }
@@ -184,47 +188,74 @@
         // --- UI RENDERING ---
 
         function createClassCard(cls, status) {
-            let borderClass, bgClass, textClass, icon, statusText;
+            let borderClass, bgClass, textClass, icon, statusText, roomBgClass, roomTextClass;
 
             if (status === 'ongoing') {
-                borderClass = 'border-l-4 border-blue-500 shadow-blue-900/20 shadow-lg';
+                borderClass = 'border-l-4 border-green-500 shadow-green-900/20 shadow-lg';
                 bgClass = 'bg-slate-800/80';
-                textClass = 'text-blue-400';
+                textClass = 'text-green-400';
+                roomBgClass = 'bg-green-500/20';
+                roomTextClass = 'text-green-400';
                 icon = '<i class="ph ph-spinner-gap animate-spin text-xl"></i>';
                 statusText = 'Happening Now';
+            } else if (status === 'upcoming-soon') {
+                borderClass = 'border-l-4 border-orange-500 shadow-orange-900/20 shadow-lg';
+                bgClass = 'bg-slate-800/80';
+                textClass = 'text-orange-400';
+                roomBgClass = 'bg-orange-500/20';
+                roomTextClass = 'text-orange-400';
+                icon = '<i class="ph ph-warning-circle animate-pulse text-xl"></i>';
+                statusText = 'Starting Soon';
             } else if (status === 'upcoming') {
                 borderClass = 'border-l-4 border-slate-600 shadow-md';
                 bgClass = 'bg-slate-900';
                 textClass = 'text-slate-300';
+                roomBgClass = 'bg-black/20';
+                roomTextClass = 'text-slate-100';
                 icon = '<i class="ph ph-clock text-xl"></i>';
                 statusText = 'Upcoming';
             } else {
                 borderClass = 'border-l-4 border-slate-800 opacity-60 grayscale-[50%]';
                 bgClass = 'bg-slate-900/50';
                 textClass = 'text-slate-500';
+                roomBgClass = 'bg-black/40';
+                roomTextClass = 'text-slate-500';
                 icon = '<i class="ph ph-check-circle text-xl"></i>';
                 statusText = 'Ended';
             }
 
+            const classType = cls.type || 'Theory';
+
+            // New 2-column layout (Room on left, Course/Instructor on right)
             return `
-                <div class="${bgClass} ${borderClass} rounded-r-2xl p-5 transition-all duration-300 transform">
-                    <div class="flex justify-between items-start mb-2">
-                        <div class="flex items-center space-x-2 ${textClass} font-semibold text-sm tracking-wide">
-                            ${icon} <span>${statusText}</span>
-                        </div>
-                        <div class="text-xs font-mono bg-slate-950 px-2 py-1 rounded text-slate-400 border border-slate-800">
-                            ${cls.startTimeStr} - ${cls.endTimeStr}
-                        </div>
+                <div class="${bgClass} ${borderClass} rounded-r-2xl flex overflow-hidden transition-all duration-300 transform">
+                    <!-- Left Column: Room -->
+                    <div class="w-1/3 ${roomBgClass} flex flex-col items-center justify-center p-3 border-r border-slate-800/50 min-h-[110px]">
+                        <span class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">Room</span>
+                        <span class="text-3xl font-black ${roomTextClass} text-center leading-none">${cls.room}</span>
                     </div>
-                    <h3 class="text-2xl font-bold text-slate-100 mb-1">${cls.course}</h3>
-                    <div class="flex flex-col space-y-1 mt-3">
-                        <div class="flex items-center text-slate-400 text-sm">
-                            <i class="ph ph-user-circle mr-2 text-lg"></i>
-                            Instructor: <span class="text-slate-200 ml-1 font-medium">${cls.instructor}</span>
+                    
+                    <!-- Right Column: Details -->
+                    <div class="w-2/3 p-4 flex flex-col justify-between">
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="flex items-center space-x-1.5 ${textClass} font-semibold text-xs tracking-wide">
+                                ${icon} <span>${statusText}</span>
+                            </div>
+                            <div class="text-[10px] font-mono bg-slate-950 px-2 py-1 rounded text-slate-400 border border-slate-800 whitespace-nowrap">
+                                ${cls.startTimeStr} - ${cls.endTimeStr}
+                            </div>
                         </div>
-                        <div class="flex items-center text-slate-400 text-sm">
-                            <i class="ph ph-map-pin mr-2 text-lg"></i>
-                            Room: <span class="text-slate-200 ml-1 font-medium">${cls.room}</span>
+                        
+                        <div>
+                            <div class="flex items-center space-x-2 mb-1">
+                                <h3 class="text-2xl font-bold text-slate-100 leading-tight">${cls.course}</h3>
+                                <span class="text-[9px] font-bold px-1.5 py-0.5 rounded-sm ${classType === 'Lab' ? 'bg-indigo-500/20 text-indigo-300' : 'bg-slate-700/50 text-slate-400'} uppercase tracking-wider">${classType}</span>
+                            </div>
+                            
+                            <div class="flex items-center text-slate-400 text-sm mt-1.5">
+                                <i class="ph ph-user-circle mr-1.5 text-lg"></i>
+                                <span class="text-slate-200 font-medium truncate">${cls.instructor}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -249,7 +280,7 @@
                     html += `
                         <div class="animate-fade-in">
                             <h2 class="text-sm uppercase tracking-widest text-slate-500 font-bold mb-3 pl-1">Current</h2>
-                            ${createClassCard(ongoing, 'ongoing')}
+                            ${createClassCard(ongoing, ongoing.renderStatus)}
                         </div>
                     `;
                 }
@@ -261,7 +292,7 @@
                         <div class="animate-fade-in" style="animation-delay: 0.1s">
                             <h2 class="text-sm uppercase tracking-widest text-slate-500 font-bold mb-3 pl-1 mt-6">${headerText}</h2>
                             <div class="space-y-4">
-                                ${upcoming.map(cls => createClassCard(cls, 'upcoming')).join('')}
+                                ${upcoming.map(cls => createClassCard(cls, cls.renderStatus)).join('')}
                             </div>
                         </div>
                     `;
@@ -274,7 +305,7 @@
                         <div class="animate-fade-in" style="animation-delay: 0.2s">
                             <h2 class="text-sm uppercase tracking-widest text-slate-600 font-bold mb-3 pl-1 mt-6">${headerText}</h2>
                             <div class="space-y-3">
-                                ${ended.map(cls => createClassCard(cls, 'ended')).join('')}
+                                ${ended.map(cls => createClassCard(cls, cls.renderStatus)).join('')}
                             </div>
                         </div>
                     `;
@@ -317,12 +348,35 @@
         async function loadDataAndStart() {
             // Built-in fallback data (prevents preview & local file crashes)
             const fallbackData = {
-                "monday": {}, "tuesday": {}, "wednesday": {}, "thursday": {}, "friday": {}, "saturday": {},
-                "sunday": {
-                    "1030": { "course": "EEE 4133", "instructor": "MID", "room": "4A05" },
-                    "1120": { "course": "EEE 4135", "instructor": "Siddiquee", "room": "4A05" },
-                    "1210": { "course": "EEE 4131", "instructor": "Moed", "room": "4A06" }
-                }
+              "monday": {
+                "1030": { "course": "EEE 4133", "instructor": "MID", "room": "4A05" },
+                "1120": { "course": "EEE 4135", "instructor": "Siddiquee", "room": "4A05" },
+                "1210": { "course": "EEE 4131", "instructor": "Moed", "room": "4A06" },
+                "1620": { "course": "EEE 4137", "instructor": "Kabir", "room": "4A05" },
+                "1710": { "course": "EEE 4105", "instructor": "FSH", "room": "4A06" }
+              },
+              "tuesday": {
+                "0800": { "course": "EEE 4106", "instructor": "Farid, Bhuiyan", "room": "3B08", "type": "Lab" },
+                "1120": { "course": "EEE 4105", "instructor": "FSH", "room": "4A06" },
+                "1530": { "course": "EEE 4137", "instructor": "Kabir", "room": "4A07" }
+              },
+              "wednesday": {
+                "0800": { "course": "EEE 4133", "instructor": "MID", "room": "4A05" },
+                "0850": { "course": "EEE 4131", "instructor": "Moed", "room": "4A06" },
+                "0940": { "course": "EEE 4135", "instructor": "Siddiquee", "room": "4A05" },
+                "1030": { "course": "EEE 4138", "instructor": "Bhuiyan, Khan", "room": "4B05", "type": "Lab" }
+              },
+              "thursday": {
+                "1030": { "course": "EEE 4137", "instructor": "Kabir", "room": "4A05" },
+                "1120": { "course": "EEE 4105", "instructor": "FSH", "room": "4A06" },
+                "1300": { "course": "EEE 4134", "instructor": "Aura, Moed", "room": "4B03", "type": "Lab" }
+              },
+              "friday": {}, "saturday": {},
+              "sunday": {
+                "1030": { "course": "EEE 4133", "instructor": "MID", "room": "4A05" },
+                "1120": { "course": "EEE 4135", "instructor": "Siddiquee", "room": "4A05" },
+                "1210": { "course": "EEE 4131", "instructor": "Moed", "room": "4A06" }
+              }
             };
 
             try {

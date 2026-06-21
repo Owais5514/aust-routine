@@ -1,6 +1,30 @@
 {
   "monday": {
-
+    "1030": {
+      "course": "EEE 4133",
+      "instructor": "MID",
+      "room": "4A05"
+    },
+    "1120": {
+      "course": "EEE 4135",
+      "instructor": "Siddiquee",
+      "room": "4A05"
+    },
+    "1210": {
+      "course": "EEE 4131",
+      "instructor": "Moed",
+      "room": "4A06"
+    },
+    "1620": {
+      "course": "EEE 4137",
+      "instructor": "Kabir",
+      "room": "4A05"
+    },
+    "1710": {
+      "course": "EEE 4105",
+      "instructor": "FSH",
+      "room": "4A06"
+    }
   },
   "sunday": {
     "1030": {
@@ -20,12 +44,62 @@
     }
   },
   "thursday": {
-
+    "1030": {
+      "course": "EEE 4137",
+      "instructor": "Kabir",
+      "room": "4A05"
+    },
+    "1120": {
+      "course": "EEE 4105",
+      "instructor": "FSH",
+      "room": "4A06"
+    },
+    "1300": {
+      "course": "EEE 4134",
+      "instructor": "Aura, Moed",
+      "room": "4B03",
+      "type": "Lab"
+    }
   },
   "tuesday": {
-
+    "0800": {
+      "course": "EEE 4106",
+      "instructor": "Farid, Bhuiyan",
+      "room": "3B08",
+      "type": "Lab"
+    },
+    "1120": {
+      "course": "EEE 4105",
+      "instructor": "FSH",
+      "room": "4A06"
+    },
+    "1530": {
+      "course": "EEE 4137",
+      "instructor": "Kabir",
+      "room": "4A07"
+    }
   },
   "wednesday": {
-
+    "0800": {
+      "course": "EEE 4133",
+      "instructor": "MID",
+      "room": "4A05"
+    },
+    "0850": {
+      "course": "EEE 4131",
+      "instructor": "Moed",
+      "room": "4A06"
+    },
+    "0940": {
+      "course": "EEE 4135",
+      "instructor": "Siddiquee",
+      "room": "4A05"
+    },
+    "1030": {
+      "course": "EEE 4138",
+      "instructor": "Bhuiyan, Khan",
+      "room": "4B05",
+      "type": "Lab"
+    }
   }
 }
