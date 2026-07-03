@@ -4,11 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>My Class Routine</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Phosphor Icons for UI elements -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <script>
+        // Configure Tailwind to use manual dark mode class toggling
+        tailwind.config = {
+            darkMode: 'class', 
+        }
+    </script>
+    
+    <script>
+        // Set dark mode instantly on load to prevent screen flash
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+
     <style>
-        /* Smooth fade-in for dynamic content */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -16,52 +32,92 @@
         .animate-fade-in {
             animation: fadeIn 0.4s ease-out forwards;
         }
-        /* Custom scrollbar for webkit */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 10px; }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen pb-12 selection:bg-blue-500 selection:text-white">
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans antialiased min-h-screen pb-12 selection:bg-blue-500 selection:text-white transition-colors duration-300">
 
-    <div class="max-w-md mx-auto p-5">
+    <div class="max-w-5xl mx-auto p-5 md:p-8">
         
-        <!-- Header / Clock Section -->
-        <header class="text-center py-8 mb-4 border-b border-slate-800 animate-fade-in">
-            <h1 id="time-display" class="text-6xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500 drop-shadow-sm transition-all duration-200">
-                00:00
-            </h1>
+        <!-- Top Navigation Bar -->
+        <div class="flex justify-between items-center mb-6 md:mb-10 animate-fade-in relative z-10">
+            <!-- Hamburger Menu Button -->
+            <button id="menu-btn" class="p-3 rounded-2xl bg-slate-200/60 dark:bg-slate-900/60 hover:bg-slate-300 dark:hover:bg-slate-800 transition-all border border-slate-300 dark:border-slate-800/80 shadow-sm active:scale-95">
+                <i class="ph ph-list text-2xl text-slate-700 dark:text-slate-300"></i>
+            </button>
             
-            <!-- Date & Date Picker Section -->
-            <div class="mt-5 flex flex-col items-center justify-center space-y-3">
-                <div id="date-selector" class="flex items-center justify-center space-x-2 text-slate-300 relative group cursor-pointer bg-slate-900/60 hover:bg-slate-800 px-4 py-2 rounded-xl transition-colors border border-slate-800">
-                    <i class="ph ph-calendar-blank text-xl"></i>
-                    <p id="date-display" class="text-lg font-medium"></p>
-                    <i class="ph ph-caret-down text-sm text-slate-500 ml-1"></i>
-                    <!-- Hidden native date picker -->
-                    <input type="date" id="date-picker" class="absolute w-0 h-0 opacity-0 overflow-hidden" style="bottom: 0; left: 50%;">
-                </div>
+            <!-- Theme Toggle Button -->
+            <button id="theme-btn" class="p-3 rounded-2xl bg-slate-200/60 dark:bg-slate-900/60 hover:bg-slate-300 dark:hover:bg-slate-800 transition-all border border-slate-300 dark:border-slate-800/80 shadow-sm active:scale-95">
+                <i id="theme-icon" class="ph ph-moon text-2xl text-slate-700 dark:text-slate-300"></i>
+            </button>
+        </div>
+
+        <!-- Main Responsive Layout Wrapper -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10 items-start">
+            
+            <!-- Left Panel: Clock & Date Selection (Sticky on Desktop) -->
+            <header class="md:sticky md:top-8 bg-white/70 dark:bg-slate-900/40 backdrop-blur-md border border-slate-200 dark:border-slate-800/60 rounded-3xl p-6 md:p-8 text-center animate-fade-in shadow-md dark:shadow-none">
+                <h1 id="time-display" class="text-6xl md:text-7xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 drop-shadow-sm transition-all duration-200">
+                    00:00
+                </h1>
                 
-                <button id="reset-btn" class="hidden text-xs bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 border border-blue-500/30 px-4 py-1.5 rounded-full transition-colors flex items-center space-x-1.5">
-                    <i class="ph ph-arrow-u-down-left font-bold"></i>
-                    <span class="font-semibold tracking-wide">Back to Today</span>
+                <!-- Date & Date Picker Section -->
+                <div class="mt-6 flex flex-col items-center justify-center space-y-3">
+                    <div id="date-selector" class="flex items-center justify-center space-x-2 text-slate-700 dark:text-slate-300 relative group cursor-pointer bg-slate-200/60 dark:bg-slate-900/60 hover:bg-slate-300 dark:hover:bg-slate-800 px-5 py-3 rounded-2xl transition-all border border-slate-300 dark:border-slate-800 shadow-sm active:scale-98">
+                        <i class="ph ph-calendar-blank text-xl"></i>
+                        <p id="date-display" class="text-base md:text-lg font-semibold"></p>
+                        <i class="ph ph-caret-down text-sm text-slate-500 ml-1"></i>
+                        <!-- Hidden native date picker -->
+                        <input type="date" id="date-picker" class="absolute w-0 h-0 opacity-0 overflow-hidden" style="bottom: 0; left: 50%;">
+                    </div>
+                    
+                    <button id="reset-btn" class="hidden text-xs bg-blue-100 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-900/50 border border-blue-300 dark:border-blue-800 px-4 py-2 rounded-full transition-all items-center space-x-1.5 shadow-sm active:scale-95 font-semibold tracking-wide">
+                        <i class="ph ph-arrow-u-down-left font-bold"></i>
+                        <span>Back to Today</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Right Panel: Dynamic Schedule Container -->
+            <main id="routine-container" class="md:col-span-2 space-y-8">
+                <!-- Dynamic content will be injected here by JS -->
+            </main>
+
+        </div>
+    </div>
+
+    <!-- Mobile Menu Drawer Overlay -->
+    <div id="mobile-menu" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300">
+        <!-- Drawer Panel -->
+        <div class="absolute top-0 left-0 w-72 h-full bg-white dark:bg-slate-950 shadow-2xl transform -translate-x-full transition-transform duration-300 flex flex-col" id="menu-drawer">
+            <div class="p-6 flex justify-between items-center border-b border-slate-200 dark:border-slate-900">
+                <span class="font-bold text-xl text-slate-800 dark:text-slate-200 tracking-wide">Menu</span>
+                <button id="close-menu-btn" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
+                    <i class="ph ph-x text-xl"></i>
                 </button>
             </div>
-        </header>
-
-        <!-- Main Content Area -->
-        <main id="routine-container" class="space-y-8">
-            <!-- Dynamic content will be injected here by JS -->
-        </main>
-
+            <div class="flex flex-col p-6 space-y-3">
+                <a href="index.html" class="flex items-center space-x-3.5 p-3.5 rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400 font-semibold transition-all">
+                    <i class="ph ph-house text-2xl"></i>
+                    <span class="text-lg">Home</span>
+                </a>
+                <a href="thesis.html" class="flex items-center space-x-3.5 p-3.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-900 text-slate-700 dark:text-slate-300 font-semibold transition-all">
+                    <i class="ph ph-book-open text-2xl"></i>
+                    <span class="text-lg">Thesis</span>
+                </a>
+            </div>
+        </div>
     </div>
 
     <script>
+        
         // --- CONFIGURATION ---
         const CLASS_DURATION_MINUTES = 50; 
         const LAB_DURATION_MINUTES = 150; // 2 hours 30 minutes
 
-        let routineData = null; // Will be populated from routine.json or fallback
+        let routineData = null; // Will be populated from JSON
 
         const daysOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
         
@@ -75,6 +131,7 @@
             return (hours * 60) + mins;
         }
 
+        // 24 Hour format returning HH:MM
         function formatTimeStr(timeStr) {
             let hours = timeStr.substring(0, 2);
             let mins = timeStr.substring(2, 4);
@@ -85,15 +142,13 @@
             return (date.getHours() * 60) + date.getMinutes();
         }
 
-        // --- MAIN APP LOGIC ---
-
         function updateApp() {
-            if (!routineData) return; // Don't run if data isn't loaded yet
+            if (!routineData) return; 
 
             const realNow = new Date();
             const targetDate = manualDate || realNow;
             
-            // 1. Update Clock Display (Always shows real current time)
+            // 1. Update Clock Display (24-hour format)
             let hours = realNow.getHours();
             let minutes = realNow.getMinutes();
             hours = hours < 10 ? '0' + hours : hours;
@@ -115,7 +170,7 @@
             } else {
                 resetBtn.classList.add('hidden');
                 resetBtn.classList.remove('flex');
-                datePicker.value = ''; // Reset input to placeholder state
+                datePicker.value = ''; 
             }
 
             // 3. Process Routine Data
@@ -123,19 +178,18 @@
             const todaysClassesRaw = routineData[currentDayName] || {};
             const currentMinutes = getMinutesFromMidnight(realNow);
 
-            // Time comparison logic (Midnight normalization to compare pure dates)
+            // Time comparison logic 
             const todayMidnight = new Date(realNow.getFullYear(), realNow.getMonth(), realNow.getDate());
             const targetMidnight = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate());
             
             const isToday = targetMidnight.getTime() === todayMidnight.getTime();
             const isPast = targetMidnight.getTime() < todayMidnight.getTime();
 
-            // Convert object to array and sort by start time
+            // Convert object to array and sort
             let todaysClasses = Object.keys(todaysClassesRaw).map(timeKey => {
                 const classData = todaysClassesRaw[timeKey];
                 const startMins = timeStringToMinutes(timeKey);
                 
-                // Determine duration based on class type
                 const duration = classData.type === 'Lab' ? LAB_DURATION_MINUTES : CLASS_DURATION_MINUTES;
                 const endMins = startMins + duration;
                 
@@ -159,20 +213,16 @@
 
             todaysClasses.forEach(cls => {
                 if (isPast) {
-                    // Looking at a past day: everything has ended
                     cls.renderStatus = 'ended';
                     endedClasses.push(cls);
                 } else if (!isToday) {
-                    // Looking at a future day: everything is upcoming
                     cls.renderStatus = 'upcoming';
                     upcomingClasses.push(cls);
                 } else {
-                    // Looking at today: compute based on real time
                     if (currentMinutes >= cls.startMins && currentMinutes < cls.endMins) {
                         cls.renderStatus = 'ongoing';
                         ongoingClass = cls;
                     } else if (currentMinutes < cls.startMins) {
-                        // Check if it starts in 10 minutes or less
                         cls.renderStatus = (cls.startMins - currentMinutes <= 10) ? 'upcoming-soon' : 'upcoming';
                         upcomingClasses.push(cls);
                     } else {
@@ -185,76 +235,77 @@
             renderRoutine(ongoingClass, upcomingClasses, endedClasses, todaysClasses.length === 0, isToday);
         }
 
-        // --- UI RENDERING ---
-
         function createClassCard(cls, status) {
             let borderClass, bgClass, textClass, icon, statusText, roomBgClass, roomTextClass;
 
+            // Colors fully updated to support modern and fluid aesthetic on both light & dark modes
             if (status === 'ongoing') {
-                borderClass = 'border-l-4 border-green-500 shadow-green-900/20 shadow-lg';
-                bgClass = 'bg-slate-800/80';
-                textClass = 'text-green-400';
-                roomBgClass = 'bg-green-500/20';
-                roomTextClass = 'text-green-400';
+                borderClass = 'border-l-4 border-green-500 shadow-green-900/10 dark:shadow-green-950/20 shadow-lg';
+                bgClass = 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800';
+                textClass = 'text-green-600 dark:text-green-400';
+                roomBgClass = 'bg-green-500/10 dark:bg-green-500/20';
+                roomTextClass = 'text-green-700 dark:text-green-400';
                 icon = '<i class="ph ph-spinner-gap animate-spin text-xl"></i>';
                 statusText = 'Happening Now';
             } else if (status === 'upcoming-soon') {
-                borderClass = 'border-l-4 border-orange-500 shadow-orange-900/20 shadow-lg';
-                bgClass = 'bg-slate-800/80';
-                textClass = 'text-orange-400';
-                roomBgClass = 'bg-orange-500/20';
-                roomTextClass = 'text-orange-400';
+                borderClass = 'border-l-4 border-orange-500 shadow-orange-900/10 dark:shadow-orange-950/20 shadow-lg';
+                bgClass = 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800';
+                textClass = 'text-orange-600 dark:text-orange-400';
+                roomBgClass = 'bg-orange-500/10 dark:bg-orange-500/20';
+                roomTextClass = 'text-orange-700 dark:text-orange-400';
                 icon = '<i class="ph ph-warning-circle animate-pulse text-xl"></i>';
                 statusText = 'Starting Soon';
             } else if (status === 'upcoming') {
-                borderClass = 'border-l-4 border-slate-600 shadow-md';
-                bgClass = 'bg-slate-900';
-                textClass = 'text-slate-300';
-                roomBgClass = 'bg-black/20';
-                roomTextClass = 'text-slate-100';
+                borderClass = 'border-l-4 border-slate-400 dark:border-slate-700 shadow-sm';
+                bgClass = 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800';
+                textClass = 'text-slate-600 dark:text-slate-300';
+                roomBgClass = 'bg-slate-100 dark:bg-slate-950';
+                roomTextClass = 'text-slate-800 dark:text-slate-100';
                 icon = '<i class="ph ph-clock text-xl"></i>';
                 statusText = 'Upcoming';
             } else {
-                borderClass = 'border-l-4 border-slate-800 opacity-60 grayscale-[50%]';
-                bgClass = 'bg-slate-900/50';
-                textClass = 'text-slate-500';
-                roomBgClass = 'bg-black/40';
-                roomTextClass = 'text-slate-500';
+                borderClass = 'border-l-4 border-slate-300 dark:border-slate-800 opacity-60 grayscale-[40%]';
+                bgClass = 'bg-slate-100/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800/60';
+                textClass = 'text-slate-500 dark:text-slate-500';
+                roomBgClass = 'bg-slate-200/50 dark:bg-slate-950/40';
+                roomTextClass = 'text-slate-500 dark:text-slate-500';
                 icon = '<i class="ph ph-check-circle text-xl"></i>';
                 statusText = 'Ended';
             }
 
             const classType = cls.type || 'Theory';
+            const badgeClass = classType === 'Lab' 
+                ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300' 
+                : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400';
 
-            // New 2-column layout (Room on left, Course/Instructor on right)
             return `
-                <div class="${bgClass} ${borderClass} rounded-r-2xl flex overflow-hidden transition-all duration-300 transform">
-                    <!-- Left Column: Room -->
-                    <div class="w-1/3 ${roomBgClass} flex flex-col items-center justify-center p-3 border-r border-slate-800/50 min-h-[110px]">
-                        <span class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">Room</span>
-                        <span class="text-3xl font-black ${roomTextClass} text-center leading-none">${cls.room}</span>
+                <div class="${bgClass} ${borderClass} rounded-r-2xl flex overflow-hidden transition-all duration-300 hover:scale-[1.01] hover:shadow-md">
+                    <!-- Left Column: Room (Responsive design) -->
+                    <div class="w-1/3 ${roomBgClass} flex flex-col items-center justify-center p-4 border-r border-slate-200 dark:border-slate-800/50 min-h-[110px] select-none">
+                        <span class="text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400 font-bold mb-1">Room</span>
+                        <span class="text-3xl md:text-4xl font-black ${roomTextClass} text-center leading-none">${cls.room}</span>
                     </div>
                     
                     <!-- Right Column: Details -->
                     <div class="w-2/3 p-4 flex flex-col justify-between">
                         <div class="flex justify-between items-start mb-3">
-                            <div class="flex items-center space-x-1.5 ${textClass} font-semibold text-xs tracking-wide">
+                            <div class="flex items-center space-x-1.5 ${textClass} font-bold text-xs tracking-wide">
                                 ${icon} <span>${statusText}</span>
                             </div>
-                            <div class="text-[10px] font-mono bg-slate-950 px-2 py-1 rounded text-slate-400 border border-slate-800 whitespace-nowrap">
+                            <div class="text-[10px] font-mono bg-slate-100 dark:bg-slate-950 px-2 py-1 rounded text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-800 whitespace-nowrap select-none">
                                 ${cls.startTimeStr} - ${cls.endTimeStr}
                             </div>
                         </div>
                         
                         <div>
-                            <div class="flex items-center space-x-2 mb-1">
-                                <h3 class="text-2xl font-bold text-slate-100 leading-tight">${cls.course}</h3>
-                                <span class="text-[9px] font-bold px-1.5 py-0.5 rounded-sm ${classType === 'Lab' ? 'bg-indigo-500/20 text-indigo-300' : 'bg-slate-700/50 text-slate-400'} uppercase tracking-wider">${classType}</span>
+                            <div class="flex items-center flex-wrap gap-2 mb-1.5">
+                                <h3 class="text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-100 leading-tight">${cls.course}</h3>
+                                <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${badgeClass} uppercase tracking-wider select-none">${classType}</span>
                             </div>
                             
-                            <div class="flex items-center text-slate-400 text-sm mt-1.5">
+                            <div class="flex items-center text-slate-500 dark:text-slate-400 text-sm mt-1">
                                 <i class="ph ph-user-circle mr-1.5 text-lg"></i>
-                                <span class="text-slate-200 font-medium truncate">${cls.instructor}</span>
+                                <span class="text-slate-700 dark:text-slate-300 font-medium truncate">${cls.instructor}</span>
                             </div>
                         </div>
                     </div>
@@ -268,29 +319,27 @@
 
             if (isFreeDay) {
                 html = `
-                    <div class="text-center py-16 animate-fade-in">
-                        <i class="ph ph-coffee text-6xl text-slate-600 mb-4 block"></i>
-                        <h2 class="text-2xl font-semibold text-slate-300">No classes scheduled!</h2>
+                    <div class="text-center py-16 animate-fade-in bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8">
+                        <i class="ph ph-coffee text-6xl text-slate-400 dark:text-slate-600 mb-4 block"></i>
+                        <h2 class="text-2xl font-bold text-slate-700 dark:text-slate-300">No classes scheduled!</h2>
                         <p class="text-slate-500 mt-2">Enjoy your free time.</p>
                     </div>
                 `;
             } else {
-                // Ongoing
                 if (ongoing) {
                     html += `
                         <div class="animate-fade-in">
-                            <h2 class="text-sm uppercase tracking-widest text-slate-500 font-bold mb-3 pl-1">Current</h2>
+                            <h2 class="text-xs uppercase tracking-widest text-slate-500 font-bold mb-3 pl-1">Current</h2>
                             ${createClassCard(ongoing, ongoing.renderStatus)}
                         </div>
                     `;
                 }
 
-                // Upcoming
                 if (upcoming.length > 0) {
                     const headerText = isToday ? "Next Up" : "Scheduled";
                     html += `
                         <div class="animate-fade-in" style="animation-delay: 0.1s">
-                            <h2 class="text-sm uppercase tracking-widest text-slate-500 font-bold mb-3 pl-1 mt-6">${headerText}</h2>
+                            <h2 class="text-xs uppercase tracking-widest text-slate-500 font-bold mb-3 pl-1 mt-6">${headerText}</h2>
                             <div class="space-y-4">
                                 ${upcoming.map(cls => createClassCard(cls, cls.renderStatus)).join('')}
                             </div>
@@ -298,13 +347,12 @@
                     `;
                 }
 
-                // Ended
                 if (ended.length > 0) {
                     const headerText = isToday ? "Completed Today" : "Completed";
                     html += `
                         <div class="animate-fade-in" style="animation-delay: 0.2s">
-                            <h2 class="text-sm uppercase tracking-widest text-slate-600 font-bold mb-3 pl-1 mt-6">${headerText}</h2>
-                            <div class="space-y-3">
+                            <h2 class="text-xs uppercase tracking-widest text-slate-500 dark:text-slate-600 font-bold mb-3 pl-1 mt-6">${headerText}</h2>
+                            <div class="space-y-4">
                                 ${ended.map(cls => createClassCard(cls, cls.renderStatus)).join('')}
                             </div>
                         </div>
@@ -317,20 +365,62 @@
             }
         }
 
-        // --- EVENT LISTENERS ---
+        
+        // Theme Logic
+        const themeBtn = document.getElementById('theme-btn');
+        const themeIcon = document.getElementById('theme-icon');
+        const htmlElement = document.documentElement;
 
+        if (htmlElement.classList.contains('dark')) {
+            themeIcon.classList.replace('ph-moon', 'ph-sun');
+        }
+
+        themeBtn.addEventListener('click', () => {
+            if (htmlElement.classList.contains('dark')) {
+                htmlElement.classList.remove('dark');
+                localStorage.theme = 'light';
+                themeIcon.classList.replace('ph-sun', 'ph-moon');
+            } else {
+                htmlElement.classList.add('dark');
+                localStorage.theme = 'dark';
+                themeIcon.classList.replace('ph-moon', 'ph-sun');
+            }
+        });
+
+        // Menu Drawer Logic
+        const menuBtn = document.getElementById('menu-btn');
+        const closeMenuBtn = document.getElementById('close-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuDrawer = document.getElementById('menu-drawer');
+
+        function openMenu() {
+            mobileMenu.classList.remove('hidden');
+            setTimeout(() => {
+                mobileMenu.classList.remove('opacity-0');
+                menuDrawer.classList.remove('-translate-x-full');
+            }, 10);
+        }
+
+        function closeMenu() {
+            mobileMenu.classList.add('opacity-0');
+            menuDrawer.classList.add('-translate-x-full');
+            setTimeout(() => { mobileMenu.classList.add('hidden'); }, 300); 
+        }
+
+        menuBtn.addEventListener('click', openMenu);
+        closeMenuBtn.addEventListener('click', closeMenu);
+        mobileMenu.addEventListener('click', (e) => {
+            if (e.target === mobileMenu) closeMenu(); 
+        });
+
+        // Date Picker Logic
         document.getElementById('date-selector').addEventListener('click', () => {
             const picker = document.getElementById('date-picker');
-            try {
-                picker.showPicker();
-            } catch (e) {
-                picker.focus(); // Fallback for older browsers
-            }
+            try { picker.showPicker(); } catch (e) { picker.focus(); }
         });
 
         document.getElementById('date-picker').addEventListener('change', (e) => {
             if (e.target.value) {
-                // Parse the YYYY-MM-DD string properly into local time
                 const [year, month, day] = e.target.value.split('-');
                 manualDate = new Date(year, month - 1, day);
             } else {
@@ -346,7 +436,6 @@
 
         // Initialize and start loop
         async function loadDataAndStart() {
-            // Built-in fallback data (prevents preview & local file crashes)
             const fallbackData = {
               "monday": {
                 "1030": { "course": "EEE 4133", "instructor": "MID", "room": "4A05" },
@@ -380,24 +469,19 @@
             };
 
             try {
-                // Web environments like the Canvas preview sandbox (blob:) or local file system (file:) 
-                // cannot fetch relative URLs due to security policies. We skip fetch here.
                 const protocol = window.location.protocol;
                 if (protocol === 'blob:' || protocol === 'data:' || protocol === 'file:') {
-                    console.log("Running locally or in preview. Using fallback data to avoid fetch errors.");
                     routineData = fallbackData;
                 } else {
-                    // Fetch the JSON file from the same directory when hosted on GitHub
-                    const response = await fetch('routine.json');
-                    if (!response.ok) throw new Error('Could not fetch routine.json');
+                    const response = await fetch('routine_2.json');
+                    if (!response.ok) throw new Error('Could not fetch routine_2.json');
                     routineData = await response.json();
                 }
             } catch (error) {
-                console.warn("Error fetching JSON, falling back to default data:", error);
+                console.warn("Falling back to default routine layout configuration:", error);
                 routineData = fallbackData;
             }
 
-            // Start the app logic
             updateApp();
             setInterval(updateApp, 10000);
         }
