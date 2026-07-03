@@ -53,21 +53,21 @@
     "title": "Graphene-Enhanced Multi-Resonant Terahertz Metasurface Sensor for Ultra-Sensitive Refractive Index Sensing and Analyte Characterization",
     "description": "The increasing demand for highly sensitive, compact sensing platforms has driven the development of terahertz metasurface sensors. This research aims to design a graphene-enhanced multi-resonant metasurface capable of detecting and characterizing analytes through refractive index variations. The incorporation of graphene is expected to improve electromagnetic field confinement and resonance quality, thereby enhancing sensing performance. The study will investigate resonance behavior, electric field localization, sensitivity, figure of merit (FOM), quality factor (Q-factor), signal-to-noise ratio (SNR), and detection limit. The proposed sensor may find applications in chemical, environmental, industrial, and biological sensing systems.",
     "keywords": "Metasurface; Terahertz; Graphene; Multi-Resonant Sensor; Refractive Index Sensing; Bio-sensor",
-    "teacher": ""
+    "teacher": "Prof. Dr. Russel Reza Mahmud"
   },
   {
     "serial": 9,
     "title": "Machine Learning-Assisted Reconfigurable Terahertz Metasurface Sensor Based on Phase-Change Materials for Intelligent Multi-Analyte Identification",
     "description": "Reconfigurable metasurfaces have emerged as promising candidates for next-generation adaptive sensing systems. This research proposes the design of a terahertz metasurface integrated with a phase-change material, such as GST or VO2, to dynamically control resonance characteristics. By exploiting the reversible phase transition of the active material, the sensor can operate in multiple sensing states without geometric modification. Machine learning algorithms will be employed to analyze spectral responses and automatically identify analytes based on extracted resonance features. The study aims to establish an intelligent sensing framework that combines tunable electromagnetic functionality with data-driven classification techniques.",
     "keywords": "Terahertz Metasurface; ML based Intelligent Reconfigurable Sensor; Phase-Change Materials; Multi-Analyte Detection; Resonance Tuning",
-    "teacher": ""
+    "teacher": "Prof. Dr. Russel Reza Mahmud"
   },
   {
     "serial": 10,
     "title": "Hybrid Quantum Machine Learning Assisted Surface Plasmon Resonance Prism Sensor for Ultra-High-Sensitivity Biomedical Detection",
     "description": "Surface Plasmon Resonance (SPR) sensors provide highly sensitive, real-time detection of biomolecular interactions through refractive index monitoring. As sensor datasets become increasingly complex, conventional machine-learning techniques may face computational limitations. Hybrid Quantum Machine Learning (HQML) combines quantum computing and classical learning algorithms to enhance predictive modeling and feature extraction. This thesis investigates the integration of HQML with SPR biosensors to improve detection accuracy, optimize sensor performance, and establish a foundation for future ultra-high-sensitivity biomedical sensing and precision diagnostic applications.",
     "keywords": "Surface Plasmon Resonance; Quantum Machine Learning; Biomedical Detection; Intelligent Biosensing; High-Sensitivity Biosensors",
-    "teacher": ""
+    "teacher": "Prof. Dr. Russel Reza Mahmud"
   },
   {
     "serial": 11,
@@ -158,21 +158,21 @@
     "title": "Analysis of electrical parameters of Silicon on Insulator (SOI) devices by modeling",
     "description": "Silicon-on-insulator (SOI) technology provides notable benefits over traditional bulk silicon technology, particularly in the fabrication of integrated circuits (ICs), including complementary metal-oxide-semiconductor (CMOS) ICs. In this work, key parameters such as kink effect, threshold voltage, subthreshold slope, negative transconductance, on-current and leakage current of SOI will be determined.",
     "keywords": "Silicon on Insulator, Kink Effect, Negative transconductance, Subthreshold slope",
-    "teacher": ""
+    "teacher": "Dr. Towhid Adnan Chowdhury"
   },
   {
     "serial": 24,
     "title": "Investigation of electrical characteristics of Partially-Depleted Silicon on Insulator (PD-SOI) devices by simulation",
     "description": "The device structure and operation of partially-depleted silicon on insulator (SOI) device will be investigated. Moreover, key parameters such as threshold voltage, drain induced barrier lowering, on-current and negative transconductance of PD-SOI will be determined.",
     "keywords": "Partially-Depleted, Silicon on Insulator, Drain induced barrier lowering, Negative transconductance",
-    "teacher": ""
+    "teacher": "Dr. Towhid Adnan Chowdhury"
   },
   {
     "serial": 25,
     "title": "Study of electrical parameters of Fully-Depleted Silicon on Insulator (FD-SOI) devices by modeling",
     "description": "In Fully-Depleted Silicon on Insulator (FD-SOI) devices, the ultra-thin body silicon layer introduces sensitivity to channel thickness variations, directly impacting electrical properties. In this work, key parameters such as threshold voltage, drain induced barrier lowering, on-current, temperature sensitivity, and leakage current of FD-SOI will be determined.",
     "keywords": "Fully-Depleted, Silicon on Insulator, Drain induced barrier lowering, Temperature sensitivity, Threshold Voltage",
-    "teacher": ""
+    "teacher": "Dr. Towhid Adnan Chowdhury"
   },
   {
     "serial": 26,
