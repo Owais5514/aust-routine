@@ -411,50 +411,23 @@
 
         // Initialize and start loop
         async function loadDataAndStart() {
-            const fallbackData = {
-              "monday": {
-                "1030": { "course": "EEE 4133", "instructor": "MID", "room": "4A05" },
-                "1120": { "course": "EEE 4135", "instructor": "Siddiquee", "room": "4A05" },
-                "1210": { "course": "EEE 4131", "instructor": "Moed", "room": "4A06" },
-                "1620": { "course": "EEE 4137", "instructor": "Kabir", "room": "4A05" },
-                "1710": { "course": "EEE 4105", "instructor": "FSH", "room": "4A06" }
-              },
-              "tuesday": {
-                "0800": { "course": "EEE 4106", "instructor": "Farid, Bhuiyan", "room": "3B08", "type": "Lab" },
-                "1120": { "course": "EEE 4105", "instructor": "FSH", "room": "4A06" },
-                "1530": { "course": "EEE 4137", "instructor": "Kabir", "room": "4A07" }
-              },
-              "wednesday": {
-                "0800": { "course": "EEE 4133", "instructor": "MID", "room": "4A05" },
-                "0850": { "course": "EEE 4131", "instructor": "Moed", "room": "4A06" },
-                "0940": { "course": "EEE 4135", "instructor": "Siddiquee", "room": "4A05" },
-                "1030": { "course": "EEE 4138", "instructor": "Bhuiyan, Khan", "room": "4B05", "type": "Lab" }
-              },
-              "thursday": {
-                "1030": { "course": "EEE 4137", "instructor": "Kabir", "room": "4A05" },
-                "1120": { "course": "EEE 4105", "instructor": "FSH", "room": "4A06" },
-                "1300": { "course": "EEE 4134", "instructor": "Aura, Moed", "room": "4B03", "type": "Lab" }
-              },
-              "friday": {}, "saturday": {},
-              "sunday": {
-                "1030": { "course": "EEE 4133", "instructor": "MID", "room": "4A05" },
-                "1120": { "course": "EEE 4135", "instructor": "Siddiquee", "room": "4A05" },
-                "1210": { "course": "EEE 4131", "instructor": "Moed", "room": "4A06" }
-              }
-            };
-
             try {
-                const protocol = window.location.protocol;
-                if (protocol === 'blob:' || protocol === 'data:' || protocol === 'file:') {
-                    routineData = fallbackData;
-                } else {
-                    const response = await fetch('routine_2.json');
-                    if (!response.ok) throw new Error('Could not fetch routine_2.json');
-                    routineData = await response.json();
-                }
+                const response = await fetch('routine.json');
+                if (!response.ok) throw new Error(`Could not fetch routine.json (status ${response.status})`);
+                routineData = await response.json();
             } catch (error) {
-                console.warn("Error fetching JSON, falling back to default data:", error);
-                routineData = fallbackData;
+                console.error("Error fetching routine.json:", error);
+                routineData = {}; // Empty schedule; UI will show "No classes scheduled"
+                const container = document.getElementById('routine-container');
+                if (container) {
+                    container.innerHTML = `
+                        <div class="text-center py-16 animate-fade-in bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8">
+                            <i class="ph ph-warning-circle text-6xl text-red-400 mb-4 block"></i>
+                            <h2 class="text-2xl font-bold text-slate-700 dark:text-slate-300">Couldn't load schedule</h2>
+                            <p class="text-slate-500 mt-2">Make sure routine.json is in the same folder as this page.</p>
+                        </div>
+                    `;
+                }
             }
 
             updateApp();
