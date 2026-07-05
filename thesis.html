@@ -726,6 +726,18 @@
             });
         });
 
+        // Inline Search Filter on Keyword column
+        keywordSearchQuery.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            document.querySelectorAll('.keyword-item').forEach(item => {
+                if (item.dataset.name.includes(query)) {
+                    item.classList.remove('hidden');
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+        });
+
         function revealContent() {
             if (isHeroMode) {
                 isHeroMode = false;
@@ -750,66 +762,34 @@
             }
         }
 
-        // New function to revert back to hero view
-        function showHero() {
-            if (!isHeroMode) {
-                isHeroMode = true;
-                
-                // Reveal Hero Elements
-                mainHeader.classList.remove('hidden');
-                
-                // Use a tiny timeout so the display:block takes effect before transitions
-                requestAnimationFrame(() => {
-                    mainHeader.classList.add('min-h-[100vh]', 'justify-center', 'pt-24', 'pb-8');
-                    
-                    // Hide Main Workspace
-                    mainContent.classList.remove('opacity-100', 'translate-y-0');
-                    mainContent.classList.add('opacity-0', 'translate-y-12', 'pointer-events-none');
-                    
-                    window.scrollTo(0, 0);
-                });
-            }
-        }
-
         // Trigger reveal the moment the user shows scroll intent — we listen to
         // wheel/touch/keyboard directly rather than relying only on scrollY,
         // since that can be unreliable if the hero + content don't yet add up
         // to more than one viewport's worth of height.
         window.addEventListener('wheel', (e) => {
-            if (isHeroMode && e.deltaY > 0) { 
-                revealContent(); 
-            } else if (!isHeroMode && e.deltaY < 0 && window.scrollY <= 0) {
-                showHero();
-            }
+            if (isHeroMode && e.deltaY > 0) { revealContent(); }
         }, { passive: true });
 
-        let touchStartY = null;
+        let heroTouchStartY = null;
         window.addEventListener('touchstart', (e) => {
-            touchStartY = e.touches[0].clientY;
+            heroTouchStartY = e.touches[0].clientY;
         }, { passive: true });
-        
         window.addEventListener('touchmove', (e) => {
-            if (touchStartY !== null) {
-                const deltaY = touchStartY - e.touches[0].clientY;
-                if (isHeroMode && deltaY > 15) { 
-                    revealContent(); 
-                } else if (!isHeroMode && deltaY < -15 && window.scrollY <= 0) {
-                    showHero();
-                }
+            if (isHeroMode && heroTouchStartY !== null) {
+                const deltaY = heroTouchStartY - e.touches[0].clientY;
+                if (deltaY > 15) { revealContent(); }
             }
         }, { passive: true });
 
         window.addEventListener('keydown', (e) => {
             if (isHeroMode && ['ArrowDown', 'PageDown', ' '].includes(e.key)) {
                 revealContent();
-            } else if (!isHeroMode && ['ArrowUp', 'PageUp'].includes(e.key) && window.scrollY <= 0) {
-                showHero();
             }
         });
 
         // Fallback: also reveal on actual scroll position change
         window.addEventListener('scroll', () => {
-            if (isHeroMode && window.scrollY > 10) { revealContent(); }
+            if (window.scrollY > 10) { revealContent(); }
         }, { passive: true });
 
         // Accordion Toggle function
