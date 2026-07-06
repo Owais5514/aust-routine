@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -750,6 +751,15 @@
                 mainContent.classList.remove('opacity-0', 'translate-y-12', 'pointer-events-none');
                 mainContent.classList.add('opacity-100', 'translate-y-0');
 
+                // FIX: Remove the CSS transform entirely after the transition animation completes.
+                // A lingering CSS transform creates a new positioning containing block, meaning 
+                // any child elements with `position: fixed` (like our mobile bottom sheet) get 
+                // wrongly anchored to this scrolling container instead of the actual viewport.
+                setTimeout(() => {
+                    mainContent.classList.remove('translate-y-0');
+                    mainContent.style.transform = 'none';
+                }, 750); // Using 750ms to slightly exceed the 700ms transition duration.
+
                 // The hero (which the scroll offset was measured against) just
                 // collapsed to 0 height, so snap scroll position back to the top
                 // of the now-visible workspace instead of leaving it mid-air.
@@ -762,7 +772,7 @@
             }
         }
 
-        // Trigger reveal the moment the user shows scroll intent — we listen to
+        // Trigger reveal the moment the user shows scroll intent -- we listen to
         // wheel/touch/keyboard directly rather than relying only on scrollY,
         // since that can be unreliable if the hero + content don't yet add up
         // to more than one viewport's worth of height.
@@ -1026,3 +1036,5 @@
     </script>
 </body>
 </html>
+
+```
