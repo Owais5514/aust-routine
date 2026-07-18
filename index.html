@@ -352,20 +352,30 @@
                         
                         if ((freeEndMins - freeStartMins) >= MINIMUM_FREE_TIME) {
                             
-                            // Check if this student free block overlaps with Sir's Consultation
-                            let hasConsultation = false;
-                            for(let m = currentBlockStart; m < i; m++) {
-                                if(sirConsultationMap[m]) {
-                                    hasConsultation = true;
-                                    break;
+                            // 4. Check if this student free block overlaps with Sir's Consultation
+                            // We need to split the block if part of it is a meeting and part is just free time.
+                            let currentSubBlockStart = freeStartMins;
+                            let isCurrentlyMeeting = sirConsultationMap[currentBlockStart];
+
+                            for(let m = currentBlockStart; m <= i; m++) {
+                                const globalMins = m + START_DAY;
+                                const isMeetingMinute = (m === i) ? !isCurrentlyMeeting : sirConsultationMap[m]; // Force flush at end
+
+                                if (isMeetingMinute !== isCurrentlyMeeting) {
+                                    // State changed! Save the previous chunk
+                                    if ((globalMins - currentSubBlockStart) >= MINIMUM_FREE_TIME || isCurrentlyMeeting) {
+                                         // Always save meeting blocks if they exist within a valid free block. 
+                                         // For regular free blocks, ensure they are at least 50 mins.
+                                         blocks.push({
+                                            startStr: minutesToTimeStr(currentSubBlockStart),
+                                            endStr: minutesToTimeStr(globalMins),
+                                            isConsultation: isCurrentlyMeeting
+                                        });
+                                    }
+                                    currentSubBlockStart = globalMins;
+                                    isCurrentlyMeeting = isMeetingMinute;
                                 }
                             }
-
-                            blocks.push({
-                                startStr: minutesToTimeStr(freeStartMins),
-                                endStr: minutesToTimeStr(freeEndMins),
-                                isConsultation: hasConsultation
-                            });
                         }
                         currentBlockStart = -1;
                     }
@@ -576,8 +586,6 @@
         }
 
         // --- EVENT LISTENERS ---
-
-        // Theme Toggle
         const themeBtn = document.getElementById('theme-btn');
         const themeIconDark = document.getElementById('theme-icon');
         const themeIconLight = document.getElementById('theme-icon-light');
@@ -628,7 +636,6 @@
             updateApp();
         });
 
-        // Modal Logic
         const modalOverlay = document.getElementById('free-modal-overlay');
         const modalContent = document.getElementById('free-modal-content');
         const openModalBtn = document.getElementById('free-schedule-btn');
