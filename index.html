@@ -133,7 +133,7 @@
         const CLASS_DURATION_MINUTES = 50; 
         const LAB_DURATION_MINUTES = 150; 
 
-        let globalData = null; // Holds the entire routines.json object
+        let globalData = null; // Holds the entire routine.json object
         let currentUser = null; // Currently selected user key
 
         const daysOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
@@ -635,9 +635,9 @@
                     console.log("Running locally. Using fetch but expecting failure if strict CORS.");
                 }
                 
-                // Fetch the new routines.json
-                const response = await fetch('routines.json');
-                if (!response.ok) throw new Error('Could not fetch routines.json');
+                // Fetch the new routine.json
+                const response = await fetch('routine.json');
+                if (!response.ok) throw new Error('Could not fetch routine.json');
                 globalData = await response.json();
                 
                 populateUserDropdown();
@@ -650,7 +650,7 @@
                     <div class="text-center py-10 animate-fade-in text-red-500 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-900/30 rounded-2xl m-4">
                         <i class="ph ph-warning-circle text-4xl mb-2"></i>
                         <p class="font-medium">Failed to load routine data.</p>
-                        <p class="text-sm mt-2 text-red-400">Make sure <span class="font-mono bg-red-100 dark:bg-red-900/50 px-1 rounded">routines.json</span> is uploaded.</p>
+                        <p class="text-sm mt-2 text-red-400">Make sure <span class="font-mono bg-red-100 dark:bg-red-900/50 px-1 rounded">routine.json</span> is uploaded.</p>
                     </div>`;
             }
         }
