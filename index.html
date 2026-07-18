@@ -136,7 +136,7 @@
                     </div>
                     <div>
                         <h2 class="text-xl font-bold text-slate-800 dark:text-slate-100">Common Free Times</h2>
-                        <p class="text-xs font-medium text-slate-500 mt-0.5">When everyone is available (08:00 - 18:00)</p>
+                        <p class="text-xs font-medium text-slate-500 mt-0.5">When all students are free (08:00 - 18:00)</p>
                     </div>
                 </div>
                 <button id="close-modal-btn" class="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none bg-white dark:bg-slate-900 shadow-sm border border-slate-200 dark:border-slate-700">
@@ -282,47 +282,89 @@
         // --- FREE SCHEDULE LOGIC ---
         function calculateFreeSchedule() {
             if (!globalData) return {};
-            const users = Object.keys(globalData);
+            
+            // Separate students from Sir for specific logic
+            const allUsers = Object.keys(globalData);
+            const students = allUsers.filter(u => u !== "Tasfiq Sir");
+            const sir = "Tasfiq Sir";
+
             const START_DAY = 8 * 60; // 08:00
             const END_DAY = 18 * 60;  // 18:00
             const freeTimes = {};
+            const MINIMUM_FREE_TIME = 50; // Minimum gap to show
 
             workingDays.forEach(day => {
+                // minuteMap: false = free, true = busy
                 let minuteMap = new Array(END_DAY - START_DAY).fill(false);
+                let sirConsultationMap = new Array(END_DAY - START_DAY).fill(false);
                 
-                users.forEach(user => {
-                    const dayData = globalData[user][day] || {};
+                // 1. Mark busy times for all STUDENTS
+                students.forEach(student => {
+                    const dayData = globalData[student][day] || {};
                     Object.keys(dayData).forEach(timeKey => {
                         const classData = dayData[timeKey];
                         const startMins = timeStringToMinutes(timeKey);
+                        // Default to 50 mins, Lab to 150 mins
                         let duration = classData.type === 'Lab' ? LAB_DURATION_MINUTES : CLASS_DURATION_MINUTES;
                         const endMins = startMins + duration;
                         
                         const effectiveStart = Math.max(startMins, START_DAY);
                         const effectiveEnd = Math.min(endMins, END_DAY);
                         
+                        // Mark array as busy
                         for (let m = effectiveStart; m < effectiveEnd; m++) {
                             minuteMap[m - START_DAY] = true;
                         }
                     });
                 });
 
+                // 2. Mark Consultation times for SIR
+                if (globalData[sir]) {
+                    const sirDayData = globalData[sir][day] || {};
+                    Object.keys(sirDayData).forEach(timeKey => {
+                        const classData = sirDayData[timeKey];
+                        if (classData.course === "Consultation Hour") {
+                            const startMins = timeStringToMinutes(timeKey);
+                            const endMins = startMins + CLASS_DURATION_MINUTES; // Assuming 50 min consultation
+                            const effectiveStart = Math.max(startMins, START_DAY);
+                            const effectiveEnd = Math.min(endMins, END_DAY);
+                            
+                            for (let m = effectiveStart; m < effectiveEnd; m++) {
+                                sirConsultationMap[m - START_DAY] = true;
+                            }
+                        }
+                    });
+                }
+
+                // 3. Find continuous blocks where minuteMap is false (Students are free)
                 let blocks = [];
                 let currentBlockStart = -1;
                 
                 for (let i = 0; i <= minuteMap.length; i++) {
-                    const isBusy = (i === minuteMap.length) ? true : minuteMap[i]; 
+                    const isBusy = (i === minuteMap.length) ? true : minuteMap[i]; // End of day boundary
                     
                     if (!isBusy && currentBlockStart === -1) {
-                        currentBlockStart = i;
+                        currentBlockStart = i; // Start of a free block
                     } else if (isBusy && currentBlockStart !== -1) {
+                        // End of a free block
                         const freeStartMins = currentBlockStart + START_DAY;
                         const freeEndMins = i + START_DAY;
                         
-                        if ((freeEndMins - freeStartMins) >= 30) {
+                        if ((freeEndMins - freeStartMins) >= MINIMUM_FREE_TIME) {
+                            
+                            // Check if this student free block overlaps with Sir's Consultation
+                            let hasConsultation = false;
+                            for(let m = currentBlockStart; m < i; m++) {
+                                if(sirConsultationMap[m]) {
+                                    hasConsultation = true;
+                                    break;
+                                }
+                            }
+
                             blocks.push({
                                 startStr: minutesToTimeStr(freeStartMins),
-                                endStr: minutesToTimeStr(freeEndMins)
+                                endStr: minutesToTimeStr(freeEndMins),
+                                isConsultation: hasConsultation
                             });
                         }
                         currentBlockStart = -1;
@@ -355,11 +397,26 @@
                 
                 let slotsHtml = '';
                 if (slots && slots.length > 0) {
-                    slotsHtml = slots.map(slot => `
-                        <span class="inline-block bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-400 font-mono text-sm font-medium px-3 py-1.5 rounded-lg border border-green-200/50 dark:border-green-500/20 mr-2 mb-2 shadow-sm">
-                            ${slot.startStr} - ${slot.endStr}
-                        </span>
-                    `).join('');
+                    slotsHtml = slots.map(slot => {
+                        if (slot.isConsultation) {
+                            return `
+                                <div class="inline-flex flex-col mr-2 mb-2">
+                                    <span class="inline-block bg-purple-50 text-purple-700 dark:bg-purple-500/10 dark:text-purple-400 font-mono text-sm font-medium px-3 py-1.5 rounded-t-lg border-t border-l border-r border-purple-200/50 dark:border-purple-500/30 shadow-sm">
+                                        ${slot.startStr} - ${slot.endStr}
+                                    </span>
+                                    <span class="bg-purple-500 text-white text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-b-lg text-center shadow-sm">
+                                        Meeting Slot
+                                    </span>
+                                </div>
+                            `;
+                        } else {
+                            return `
+                                <span class="inline-block bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-400 font-mono text-sm font-medium px-3 py-1.5 rounded-lg border border-green-200/50 dark:border-green-500/20 mr-2 mb-2 shadow-sm">
+                                    ${slot.startStr} - ${slot.endStr}
+                                </span>
+                            `;
+                        }
+                    }).join('');
                 } else {
                     slotsHtml = `<span class="text-slate-400 dark:text-slate-500 italic text-sm font-medium">No common free time</span>`;
                 }
