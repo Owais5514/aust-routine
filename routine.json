@@ -105,7 +105,7 @@
 "monday": {
 "1030": { "course": "EEE 4200", "instructor": "TBK", "room": "Unknown", "type": "Lab" },
 "1300": { "course": "EEE 1201 (A)", "instructor": "TBK", "room": "5B05", "type": "Theory" },
-"1350": { "course": "EEE 1201 (B)", "instructor": "TBK", "room": "5A06", "type": "Theory" },
+"1350": { "course": "EEE 1201 (B)", "instructor": "TBK", "room": "5A06", "type": "Theory" }
 },
 "tuesday": {
 "1440": { "course": "Consultation Hour", "instructor": "TBK", "room": "", "type": "Theory" },
