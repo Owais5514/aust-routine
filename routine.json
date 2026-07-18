@@ -1,105 +1,129 @@
 {
-  "monday": {
-    "1030": {
-      "course": "EEE 4133",
-      "instructor": "MID",
-      "room": "4A05"
-    },
-    "1120": {
-      "course": "EEE 4135",
-      "instructor": "Siddiquee",
-      "room": "4A05"
-    },
-    "1210": {
-      "course": "EEE 4131",
-      "instructor": "Moed",
-      "room": "4A06"
-    },
-    "1620": {
-      "course": "EEE 4137",
-      "instructor": "Kabir",
-      "room": "4A05"
-    },
-    "1710": {
-      "course": "EEE 4105",
-      "instructor": "FSH",
-      "room": "4A06"
-    }
-  },
-  "sunday": {
-    "1030": {
-      "course": "EEE 4133",
-      "instructor": "MID",
-      "room": "4A05"
-    },
-    "1120": {
-      "course": "EEE 4135",
-      "instructor": "Siddiquee",
-      "room": "4A05"
-    },
-    "1210": {
-      "course": "EEE 4131",
-      "instructor": "Moed",
-      "room": "4A06"
-    }
-  },
-  "thursday": {
-    "1030": {
-      "course": "EEE 4137",
-      "instructor": "Kabir",
-      "room": "8A07"
-    },
-    "1120": {
-      "course": "EEE 4105",
-      "instructor": "FSH",
-      "room": "4A06"
-    },
-    "1300": {
-      "course": "EEE 4134",
-      "instructor": "Aura, Moed",
-      "room": "4B03",
-      "type": "Lab"
-    }
-  },
-  "tuesday": {
-    "0800": {
-      "course": "EEE 4106",
-      "instructor": "Farid, Bhuiyan",
-      "room": "3B08",
-      "type": "Lab"
-    },
-    "1120": {
-      "course": "EEE 4105",
-      "instructor": "FSH",
-      "room": "4A06"
-    },
-    "1530": {
-      "course": "EEE 4137",
-      "instructor": "Kabir",
-      "room": "8A07"
-    }
-  },
-  "wednesday": {
-    "0800": {
-      "course": "EEE 4133",
-      "instructor": "MID",
-      "room": "4A05"
-    },
-    "0850": {
-      "course": "EEE 4131",
-      "instructor": "Moed",
-      "room": "4A06"
-    },
-    "0940": {
-      "course": "EEE 4135",
-      "instructor": "Siddiquee",
-      "room": "4A05"
-    },
-    "1030": {
-      "course": "EEE 4138",
-      "instructor": "Bhuiyan, Khan",
-      "room": "4B05",
-      "type": "Lab"
-    }
-  }
+"Abid": {
+"sunday": {
+"1030": { "course": "EEE 4133", "instructor": "MID", "room": "4A05", "type": "Theory" },
+"1120": { "course": "EEE 4135", "instructor": "Siddiquee", "room": "4A05", "type": "Theory" },
+"1210": { "course": "EEE 4131", "instructor": "Moed", "room": "4A06", "type": "Theory" }
+},
+"monday": {
+"1030": { "course": "EEE 4133", "instructor": "MID", "room": "4A05", "type": "Theory" },
+"1120": { "course": "EEE 4135", "instructor": "Siddiquee", "room": "4A05", "type": "Theory" },
+"1210": { "course": "EEE 4131", "instructor": "Moed", "room": "4A06", "type": "Theory" },
+"1300": { "course": "EEE 4154", "instructor": "Ritu, MSA", "room": "4B07", "type": "Lab" },
+"1620": { "course": "EEE 4153", "instructor": "FSA", "room": "4A06", "type": "Theory" },
+"1710": { "course": "EEE 4105", "instructor": "FSH", "room": "4A06", "type": "Theory" }
+},
+"tuesday": {
+"0800": { "course": "EEE 4106", "instructor": "Farid, Bhuiyan", "room": "3B08", "type": "Lab" },
+"1120": { "course": "EEE 4105", "instructor": "FSH", "room": "4A06", "type": "Theory" },
+"1210": { "course": "EEE 4153", "instructor": "FSA", "room": "4A06", "type": "Theory" }
+},
+"wednesday": {
+"0800": { "course": "EEE 4133", "instructor": "MID", "room": "4A05", "type": "Theory" },
+"0850": { "course": "EEE 4131", "instructor": "Moed", "room": "4A06", "type": "Theory" },
+"0940": { "course": "EEE 4135", "instructor": "Siddiquee", "room": "4A05", "type": "Theory" }
+},
+"thursday": {
+"1120": { "course": "EEE 4105", "instructor": "FSH", "room": "4A06", "type": "Theory" },
+"1210": { "course": "EEE 4153", "instructor": "FSA", "room": "4A06", "type": "Theory" },
+"1300": { "course": "EEE 4134", "instructor": "Aura, Moed", "room": "4B03", "type": "Lab" }
+},
+"friday": {},
+"saturday": {}
+},
+"Radit": {
+"sunday": {
+"0800": { "course": "EEE 4151", "room": "8A07", "instructor": "Unknown", "type": "Theory" },
+"0850": { "course": "EEE 4151", "room": "8A07", "instructor": "Unknown", "type": "Theory" },
+"1300": { "course": "EEE 4174", "room": "4B04", "instructor": "Unknown", "type": "Lab" },
+"1530": { "course": "EEE 4173", "room": "4A05", "instructor": "Unknown", "type": "Theory" }
+},
+"monday": {
+"1530": { "course": "EEE 4175", "room": "4A06", "instructor": "Unknown", "type": "Theory" },
+"1620": { "course": "EEE 4153", "room": "4A06", "instructor": "Unknown", "type": "Theory" },
+"1710": { "course": "EEE 4105", "room": "4A06", "instructor": "Unknown", "type": "Theory" }
+},
+"tuesday": {
+"1030": { "course": "EEE 4174", "room": "4A06", "instructor": "Unknown", "type": "Theory" },
+"1120": { "course": "EEE 4105", "room": "4A06", "instructor": "FSH", "type": "Theory" },
+"1210": { "course": "EEE 4153", "room": "4A06", "instructor": "Unknown", "type": "Theory" },
+"1300": { "course": "EEE 4106", "room": "3B06", "instructor": "Unknown", "type": "Lab" },
+"1710": { "course": "EEE 4173", "room": "5A03", "instructor": "Unknown", "type": "Theory" }
+},
+"wednesday": {
+"1030": { "course": "EEE 4154", "room": "4B07", "instructor": "Unknown", "type": "Theory" },
+"1530": { "course": "EEE 4151", "room": "8A07", "instructor": "Unknown", "type": "Theory" }
+},
+"thursday": {
+"0850": { "course": "EEE 4175", "room": "8A07", "instructor": "Unknown", "type": "Theory" },
+"1120": { "course": "EEE 4105", "room": "4A06", "instructor": "Unknown", "type": "Theory" },
+"1210": { "course": "EEE 4153", "room": "4A06", "instructor": "Unknown", "type": "Theory" },
+"1530": { "course": "EEE 4173", "room": "4A06", "instructor": "Unknown", "type": "Theory" }
+},
+"friday": {},
+"saturday": {}
+},
+"Raiyan": {
+"sunday": {
+"0940": { "course": "EEE 4133", "instructor": "MID", "room": "4A05", "type": "Theory" },
+"1030": { "course": "EEE 4135", "instructor": "Siddiquee", "room": "4A05", "type": "Theory" },
+"1210": { "course": "EEE 4131", "instructor": "Moed", "room": "4A06", "type": "Theory" }
+},
+"monday": {
+"0940": { "course": "EEE 4133", "instructor": "MID", "room": "4A05", "type": "Theory" },
+"1030": { "course": "EEE 4135", "instructor": "Siddiquee", "room": "4A05", "type": "Theory" },
+"1210": { "course": "EEE 4131", "instructor": "Moed", "room": "4A06", "type": "Theory" },
+"1530": { "course": "EEE 4137", "instructor": "Kabir", "room": "4A05", "type": "Theory" },
+"1620": { "course": "EEE 4105", "instructor": "FSH", "room": "4A06", "type": "Theory" }
+},
+"tuesday": {
+"0850": { "course": "EEE 4106", "instructor": "Farid, Bhuiyan", "room": "3B08", "type": "Lab" },
+"1030": { "course": "EEE 4105", "instructor": "FSH", "room": "4A06", "type": "Theory" },
+"1530": { "course": "EEE 4137", "instructor": "Kabir", "room": "8A07", "type": "Theory" }
+},
+"wednesday": {
+"0800": { "course": "EEE 4133", "instructor": "MID", "room": "4A05", "type": "Theory" },
+"0850": { "course": "EEE 4131", "instructor": "Moed", "room": "4A06", "type": "Theory" },
+"0940": { "course": "EEE 4135", "instructor": "Siddiquee", "room": "4A05", "type": "Theory" },
+"1030": { "course": "EEE 4138", "instructor": "Bhuiyan, Khan", "room": "4B05", "type": "Lab" }
+},
+"thursday": {
+"0940": { "course": "EEE 4137", "instructor": "Kabir", "room": "4A05", "type": "Theory" },
+"1030": { "course": "EEE 4105", "instructor": "FSH", "room": "4A06", "type": "Theory" },
+"1300": { "course": "EEE 4134", "instructor": "Aura, Moed", "room": "4B03", "type": "Lab" }
+},
+"friday": {},
+"saturday": {}
+},
+"Tasfiq Sir": {
+"sunday": {
+"1030": { "course": "EEE 4100", "instructor": "TBK", "room": "TBA", "type": "Lab" },
+"1300": { "course": "EEE 1201 (A)", "instructor": "TBK", "room": "5A05", "type": "Theory" },
+"1350": { "course": "EEE 1201 (B)", "instructor": "TBK", "room": "5A06", "type": "Theory" },
+"1440": { "course": "Consultation Hour", "instructor": "TBK", "room": "", "type": "Theory" }
+},
+"monday": {
+"1030": { "course": "EEE 4200", "instructor": "TBK", "room": "Unknown", "type": "Lab" },
+"1300": { "course": "EEE 1201 (A)", "instructor": "TBK", "room": "5B05", "type": "Theory" },
+"1350": { "course": "EEE 1201 (B)", "instructor": "TBK", "room": "5A06", "type": "Theory" },
+},
+"tuesday": {
+"1440": { "course": "Consultation Hour", "instructor": "TBK", "room": "", "type": "Theory" },
+"1300": { "course": "EEE 1201 (A)", "instructor": "TBK", "room": "5B05", "type": "Theory" },
+"1350": { "course": "EEE 1201 (B)", "instructor": "TBK", "room": "5A06", "type": "Theory" }
+},
+"wednesday": {
+"0800": { "course": "EEE 4200", "instructor": "TBK", "room": "Unknown", "type": "Lab" },
+"1030": { "course": "EEE 2226 (A1)", "instructor": "SS, TBK", "room": "4B01", "type": "Lab" },
+"1300": { "course": "Consultation Hour", "instructor": "TBK", "room": "", "type": "Theory" }
+},
+"thursday": {
+"0800": { "course": "EEE 4200", "instructor": "TBK", "room": "Unknown", "type": "Lab" },
+"1210": { "course": "Consultation Hour", "instructor": "TBK", "room": "", "type": "Theory" },
+"1300": { "course": "EEE 2226 (B1)", "instructor": "TBK", "room": "Unknown", "type": "Lab" },
+"1530": { "course": "EEE 6324", "instructor": "TBK", "room": "4A03", "type": "Lab" }
+},
+"friday": {},
+"saturday": {}
+}
 }
