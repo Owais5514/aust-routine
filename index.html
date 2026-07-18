@@ -133,7 +133,7 @@
         const CLASS_DURATION_MINUTES = 50; 
         const LAB_DURATION_MINUTES = 150; 
 
-        let globalData = null; // Holds the entire routine.json object
+        let globalData = null; // Holds the entire routines.json object
         let currentUser = null; // Currently selected user key
 
         const daysOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
@@ -635,7 +635,7 @@
                     console.log("Running locally. Using fetch but expecting failure if strict CORS.");
                 }
                 
-                // Fetch the new routine.json
+                // Fetch the new routine.json (Updated to match your actual file name)
                 const response = await fetch('routine.json');
                 if (!response.ok) throw new Error('Could not fetch routine.json');
                 globalData = await response.json();
