@@ -6,6 +6,9 @@
     <title>My Class Routine</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <script>
         // Set dark mode instantly on load to prevent screen flash
@@ -17,109 +20,131 @@
     </script>
 
     <style>
+        body { font-family: 'Inter', sans-serif; }
+        
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
         .animate-fade-in {
-            animation: fadeIn 0.4s ease-out forwards;
+            animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
+        
+        @keyframes pulse-soft {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .animate-pulse-soft {
+            animation: pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        /* Custom scrollbar for a polished look */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #9ca3af; border-radius: 10px; }
+        .dark ::-webkit-scrollbar-thumb { background: #4b5563; }
         
         /* Modal transitions */
-        .modal-enter { opacity: 0; transform: scale(0.95); }
-        .modal-enter-active { opacity: 1; transform: scale(1); transition: opacity 300ms, transform 300ms; }
-        .modal-exit { opacity: 1; transform: scale(1); }
-        .modal-exit-active { opacity: 0; transform: scale(0.95); transition: opacity 300ms, transform 300ms; }
+        .modal-overlay { transition: opacity 0.3s ease-out; }
+        .modal-content { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease-out; }
     </style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans antialiased min-h-screen pb-12 selection:bg-blue-500 selection:text-white transition-colors duration-300">
+<body class="bg-[#f8fafc] dark:bg-[#0f172a] text-slate-900 dark:text-slate-100 antialiased min-h-screen pb-12 selection:bg-blue-500 selection:text-white transition-colors duration-300">
 
-    <div class="max-w-6xl mx-auto p-5 md:p-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-12">
         
         <!-- Navigation & Controls Bar -->
-        <div class="flex justify-between items-center mb-6 md:mb-10 animate-fade-in relative z-40 gap-4 flex-wrap">
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4 animate-fade-in relative z-40">
             
             <!-- User Selector Dropdown -->
-            <div class="relative">
-                <select id="user-selector" class="appearance-none bg-white dark:bg-[#252525] border border-gray-200 dark:border-[#333] text-gray-800 dark:text-gray-200 text-sm sm:text-base font-semibold rounded-2xl pl-4 pr-10 py-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 cursor-pointer transition-colors min-w-[140px]">
-                    <option value="" disabled selected>Loading...</option>
+            <div class="relative w-full sm:w-auto">
+                <select id="user-selector" class="appearance-none w-full sm:w-auto bg-white dark:bg-slate-800/80 backdrop-blur-md border border-slate-200 dark:border-slate-700/50 text-slate-800 dark:text-slate-200 text-sm sm:text-base font-semibold rounded-2xl pl-5 pr-12 py-3.5 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 cursor-pointer transition-all hover:border-slate-300 dark:hover:border-slate-600">
+                    <option value="" disabled selected>Loading Users...</option>
                 </select>
-                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
                     <i class="ph ph-caret-down font-bold"></i>
                 </div>
             </div>
 
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-3 w-full sm:w-auto">
                 <!-- Free Schedule Button -->
-                <button id="free-schedule-btn" class="flex items-center gap-2 px-4 py-3 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30 hover:bg-indigo-100 dark:hover:bg-indigo-500/20 font-semibold text-sm sm:text-base transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
+                <button id="free-schedule-btn" class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/20 hover:bg-indigo-100 dark:hover:bg-indigo-500/30 font-semibold text-sm transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
                     <i class="ph ph-users-three text-lg"></i>
-                    <span>Free Schedule</span>
+                    <span>Free Time</span>
                 </button>
 
                 <!-- Theme Toggle Button -->
-                <button id="theme-btn" class="p-3 rounded-2xl bg-white dark:bg-[#252525] border border-gray-200 dark:border-[#333] shadow-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[#333] transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/50">
-                    <i id="theme-icon" class="ph ph-moon text-2xl hidden dark:block text-yellow-400"></i>
-                    <i id="theme-icon-light" class="ph ph-sun text-2xl block dark:hidden text-indigo-500"></i>
+                <button id="theme-btn" class="p-3.5 rounded-2xl bg-white dark:bg-slate-800/80 backdrop-blur-md border border-slate-200 dark:border-slate-700/50 shadow-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+                    <i id="theme-icon" class="ph ph-moon text-xl hidden dark:block text-yellow-400"></i>
+                    <i id="theme-icon-light" class="ph ph-sun text-xl block dark:hidden text-indigo-500"></i>
                 </button>
             </div>
         </div>
 
-        <!-- Main Responsive Layout Wrapper -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10 items-start">
+        <!-- Main Responsive Layout Wrapper (Split view on Desktop) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
             
             <!-- Left Panel: Clock & Date Selection (Sticky on Desktop) -->
-            <header class="md:sticky md:top-8 text-center animate-fade-in bg-white dark:bg-slate-900/50 rounded-3xl p-6 md:p-8 shadow-sm border border-slate-200 dark:border-slate-800">
-                <h1 id="time-display" class="text-6xl md:text-7xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 drop-shadow-sm transition-all duration-200">
-                    00:00
-                </h1>
-                
-                <!-- Date & Date Picker Section -->
-                <div class="mt-6 flex flex-col items-center justify-center space-y-3">
-                    <div id="date-selector" class="flex items-center justify-center space-x-2 text-slate-700 dark:text-slate-300 relative group cursor-pointer bg-slate-100 dark:bg-slate-900/60 hover:bg-slate-200 dark:hover:bg-slate-800 px-5 py-3 rounded-2xl transition-all border border-slate-200 dark:border-slate-800 shadow-sm active:scale-95">
-                        <i class="ph ph-calendar-blank text-xl"></i>
-                        <p id="date-display" class="text-base md:text-lg font-semibold"></p>
-                        <i class="ph ph-caret-down text-sm text-slate-500 ml-1"></i>
-                        <!-- Hidden native date picker -->
-                        <input type="date" id="date-picker" class="absolute w-0 h-0 opacity-0 overflow-hidden" style="bottom: 0; left: 50%;">
-                    </div>
+            <div class="lg:col-span-4 lg:sticky lg:top-8 animate-fade-in z-30">
+                <header class="text-center bg-white/70 dark:bg-slate-800/40 backdrop-blur-xl rounded-[2rem] p-8 shadow-sm border border-slate-200/60 dark:border-slate-700/50 relative overflow-hidden">
                     
-                    <button id="reset-btn" class="hidden text-xs bg-blue-100 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-500/20 border border-blue-300 dark:border-blue-500/30 px-4 py-2 rounded-full transition-colors items-center space-x-1.5 shadow-sm">
-                        <i class="ph ph-arrow-u-down-left font-bold"></i>
-                        <span class="font-semibold tracking-wide">Back to Today</span>
-                    </button>
-                </div>
-            </header>
+                    <!-- Decorative background glow -->
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-32 bg-blue-500/10 dark:bg-blue-500/20 rounded-full blur-3xl -z-10"></div>
+
+                    <h1 id="time-display" class="text-7xl font-extrabold tracking-tighter text-slate-900 dark:text-white drop-shadow-sm transition-all duration-200">
+                        00:00
+                    </h1>
+                    
+                    <!-- Date & Date Picker Section -->
+                    <div class="mt-8 flex flex-col items-center justify-center space-y-4">
+                        <div id="date-selector" class="flex items-center justify-center space-x-2 text-slate-600 dark:text-slate-300 relative group cursor-pointer bg-slate-100/80 dark:bg-slate-900/50 hover:bg-slate-200/80 dark:hover:bg-slate-800/80 px-6 py-3.5 rounded-2xl transition-all border border-slate-200/50 dark:border-slate-700/50 shadow-sm active:scale-95">
+                            <i class="ph ph-calendar-blank text-xl"></i>
+                            <p id="date-display" class="text-sm font-semibold tracking-wide"></p>
+                            <i class="ph ph-caret-down text-xs text-slate-400 ml-1"></i>
+                            <!-- Hidden native date picker -->
+                            <input type="date" id="date-picker" class="absolute w-0 h-0 opacity-0 overflow-hidden" style="bottom: 0; left: 50%;">
+                        </div>
+                        
+                        <button id="reset-btn" class="hidden text-xs bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-500/20 border border-blue-200 dark:border-blue-500/30 px-5 py-2.5 rounded-full transition-all items-center space-x-1.5 shadow-sm active:scale-95 font-medium">
+                            <i class="ph ph-arrow-u-down-left font-bold"></i>
+                            <span>Back to Today</span>
+                        </button>
+                    </div>
+                </header>
+            </div>
 
             <!-- Right Panel: Dynamic Schedule Container -->
-            <main id="routine-container" class="md:col-span-2 space-y-8">
+            <main id="routine-container" class="lg:col-span-8 space-y-10 relative z-20 min-h-[50vh]">
                 <!-- Dynamic content will be injected here by JS -->
+                <div class="flex justify-center items-center h-full pt-20 text-slate-400">
+                    <i class="ph ph-spinner animate-spin text-3xl"></i>
+                </div>
             </main>
 
         </div>
     </div>
 
     <!-- Free Schedule Modal Overlay -->
-    <div id="free-modal-overlay" class="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div id="free-modal-overlay" class="fixed inset-0 bg-slate-900/40 dark:bg-black/60 backdrop-blur-md z-50 hidden flex items-center justify-center p-4 modal-overlay opacity-0">
         <!-- Modal Content -->
-        <div id="free-modal-content" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col transform transition-all duration-300 scale-95 opacity-0">
+        <div id="free-modal-content" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/60 rounded-[2rem] shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col transform scale-95 opacity-0 modal-content overflow-hidden">
             
-            <div class="flex justify-between items-center p-6 border-b border-slate-200 dark:border-slate-800">
-                <div class="flex items-center gap-3">
-                    <div class="bg-indigo-100 dark:bg-indigo-500/20 p-2 rounded-xl text-indigo-600 dark:text-indigo-400">
+            <div class="flex justify-between items-center p-6 sm:p-8 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+                <div class="flex items-center gap-4">
+                    <div class="bg-indigo-100 dark:bg-indigo-500/20 p-2.5 rounded-2xl text-indigo-600 dark:text-indigo-400">
                         <i class="ph ph-users-three text-2xl"></i>
                     </div>
-                    <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-100">Common Free Times</h2>
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800 dark:text-slate-100">Common Free Times</h2>
+                        <p class="text-xs font-medium text-slate-500 mt-0.5">When everyone is available (08:00 - 18:00)</p>
+                    </div>
                 </div>
-                <button id="close-modal-btn" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none">
-                    <i class="ph ph-x text-2xl font-bold"></i>
+                <button id="close-modal-btn" class="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none bg-white dark:bg-slate-900 shadow-sm border border-slate-200 dark:border-slate-700">
+                    <i class="ph ph-x text-xl font-bold"></i>
                 </button>
             </div>
             
-            <div class="p-6 overflow-y-auto custom-scrollbar">
-                <p class="text-slate-500 dark:text-slate-400 mb-6">Times when <span class="font-semibold text-slate-700 dark:text-slate-200">everyone</span> is free between 08:00 and 18:00.</p>
+            <div class="p-6 sm:p-8 overflow-y-auto">
                 <div id="free-schedule-table-container">
                     <!-- Table injected by JS -->
                 </div>
@@ -133,8 +158,8 @@
         const CLASS_DURATION_MINUTES = 50; 
         const LAB_DURATION_MINUTES = 150; 
 
-        let globalData = null; // Holds the entire routines.json object
-        let currentUser = null; // Currently selected user key
+        let globalData = null; 
+        let currentUser = null; 
 
         const daysOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
         const workingDays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday'];
@@ -147,12 +172,6 @@
             const mins = parseInt(timeStr.substring(2, 4), 10);
             return (hours * 60) + mins;
         }
-
-        function formatTimeStr(timeStr) {
-            let hours = timeStr.substring(0, 2);
-            let mins = timeStr.substring(2, 4);
-            return `${hours}:${mins}`;
-        }
         
         function minutesToTimeStr(minsTotal) {
             const h = Math.floor(minsTotal / 60);
@@ -160,30 +179,28 @@
             return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
         }
 
+        function formatTimeStr(timeStr) {
+            let hours = timeStr.substring(0, 2);
+            let mins = timeStr.substring(2, 4);
+            return `${hours}:${mins}`;
+        }
+
         function getMinutesFromMidnight(date) {
             return (date.getHours() * 60) + date.getMinutes();
         }
 
         // --- MAIN APP LOGIC ---
-
         function updateApp() {
-            if (!globalData || !currentUser) return; 
-            
-            const routineData = globalData[currentUser];
-            if(!routineData) return;
-
             const realNow = new Date();
             const targetDate = manualDate || realNow;
             
             // 1. Update Clock Display (Real time)
             let hours = realNow.getHours();
             let minutes = realNow.getMinutes();
-            hours = hours < 10 ? '0' + hours : hours;
-            minutes = minutes < 10 ? '0' + minutes : minutes;
-            document.getElementById('time-display').innerText = `${hours}:${minutes}`;
+            document.getElementById('time-display').innerText = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
 
             // 2. Update Date Display
-            const options = { weekday: 'long', month: 'long', day: 'numeric' };
+            const options = { weekday: 'long', month: 'short', day: 'numeric' };
             document.getElementById('date-display').innerText = targetDate.toLocaleDateString('en-US', options);
 
             const resetBtn = document.getElementById('reset-btn');
@@ -198,7 +215,12 @@
                 datePicker.value = ''; 
             }
 
-            // 3. Process Routine Data for Current User
+            if (!globalData || !currentUser) return; 
+            
+            const routineData = globalData[currentUser];
+            if(!routineData) return;
+
+            // 3. Process Routine Data
             const currentDayName = daysOfWeek[targetDate.getDay()];
             const todaysClassesRaw = routineData[currentDayName] || {};
             const currentMinutes = getMinutesFromMidnight(realNow);
@@ -215,7 +237,6 @@
                 
                 let duration = CLASS_DURATION_MINUTES;
                 if(classData.type === 'Lab') duration = LAB_DURATION_MINUTES;
-                // Specific handling for Consultation Hour to default to 50 mins if not specified otherwise
                 if(classData.course === 'Consultation Hour') duration = CLASS_DURATION_MINUTES;
                 
                 const endMins = startMins + duration;
@@ -223,10 +244,7 @@
                 return {
                     id: timeKey,
                     startTimeStr: formatTimeStr(timeKey),
-                    endTimeStr: formatTimeStr(
-                        String(Math.floor(endMins / 60)).padStart(2, '0') + 
-                        String(endMins % 60).padStart(2, '0')
-                    ),
+                    endTimeStr: minutesToTimeStr(endMins),
                     startMins: startMins,
                     endMins: endMins,
                     ...classData
@@ -264,20 +282,14 @@
         // --- FREE SCHEDULE LOGIC ---
         function calculateFreeSchedule() {
             if (!globalData) return {};
-            
             const users = Object.keys(globalData);
             const START_DAY = 8 * 60; // 08:00
             const END_DAY = 18 * 60;  // 18:00
-            
             const freeTimes = {};
 
             workingDays.forEach(day => {
-                // Initialize boolean array for the day: true = busy, false = free
-                // Array length covers minutes from 8am to 6pm (10 hours * 60 mins = 600 slots)
-                // We use offset logic: index 0 is 08:00.
                 let minuteMap = new Array(END_DAY - START_DAY).fill(false);
                 
-                // Mark busy times for all users
                 users.forEach(user => {
                     const dayData = globalData[user][day] || {};
                     Object.keys(dayData).forEach(timeKey => {
@@ -286,7 +298,6 @@
                         let duration = classData.type === 'Lab' ? LAB_DURATION_MINUTES : CLASS_DURATION_MINUTES;
                         const endMins = startMins + duration;
                         
-                        // Bound to 08:00 - 18:00 window
                         const effectiveStart = Math.max(startMins, START_DAY);
                         const effectiveEnd = Math.min(endMins, END_DAY);
                         
@@ -296,22 +307,18 @@
                     });
                 });
 
-                // Find continuous blocks of false (free time)
                 let blocks = [];
                 let currentBlockStart = -1;
                 
                 for (let i = 0; i <= minuteMap.length; i++) {
-                    const isBusy = (i === minuteMap.length) ? true : minuteMap[i]; // Force end at 18:00
+                    const isBusy = (i === minuteMap.length) ? true : minuteMap[i]; 
                     
                     if (!isBusy && currentBlockStart === -1) {
-                        // Start of free block
                         currentBlockStart = i;
                     } else if (isBusy && currentBlockStart !== -1) {
-                        // End of free block
                         const freeStartMins = currentBlockStart + START_DAY;
                         const freeEndMins = i + START_DAY;
                         
-                        // Only add if free block is at least 30 mins
                         if ((freeEndMins - freeStartMins) >= 30) {
                             blocks.push({
                                 startStr: minutesToTimeStr(freeStartMins),
@@ -321,10 +328,8 @@
                         currentBlockStart = -1;
                     }
                 }
-                
                 freeTimes[day] = blocks;
             });
-            
             return freeTimes;
         }
 
@@ -333,15 +338,15 @@
             const container = document.getElementById('free-schedule-table-container');
             
             let html = `
-                <div class="overflow-hidden border border-slate-200 dark:border-slate-700 rounded-2xl bg-white dark:bg-slate-800/50 shadow-sm">
+                <div class="overflow-hidden border border-slate-200 dark:border-slate-700/50 rounded-2xl bg-white dark:bg-slate-800/30 shadow-sm">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700">
-                                <th class="py-3 px-4 sm:px-6 font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider text-xs w-1/3">Day</th>
-                                <th class="py-3 px-4 sm:px-6 font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider text-xs">Common Free Time Slots</th>
+                            <tr class="bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700/80">
+                                <th class="py-4 px-5 font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-xs w-1/3">Day</th>
+                                <th class="py-4 px-5 font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-xs">Available Slots</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-100 dark:divide-slate-700/50">
+                        <tbody class="divide-y divide-slate-100 dark:divide-slate-800/50">
             `;
             
             workingDays.forEach(day => {
@@ -351,18 +356,18 @@
                 let slotsHtml = '';
                 if (slots && slots.length > 0) {
                     slotsHtml = slots.map(slot => `
-                        <span class="inline-block bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400 font-mono text-sm px-2.5 py-1 rounded-md border border-green-200 dark:border-green-500/30 mr-2 mb-2">
+                        <span class="inline-block bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-400 font-mono text-sm font-medium px-3 py-1.5 rounded-lg border border-green-200/50 dark:border-green-500/20 mr-2 mb-2 shadow-sm">
                             ${slot.startStr} - ${slot.endStr}
                         </span>
                     `).join('');
                 } else {
-                    slotsHtml = `<span class="text-slate-400 dark:text-slate-500 italic text-sm">No common free time</span>`;
+                    slotsHtml = `<span class="text-slate-400 dark:text-slate-500 italic text-sm font-medium">No common free time</span>`;
                 }
 
                 html += `
-                    <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
-                        <td class="py-4 px-4 sm:px-6 font-medium text-slate-800 dark:text-slate-200 align-top">${dayStr}</td>
-                        <td class="py-4 px-4 sm:px-6 align-top">
+                    <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
+                        <td class="py-5 px-5 font-medium text-slate-700 dark:text-slate-300 align-top">${dayStr}</td>
+                        <td class="py-5 px-5 align-top">
                             <div class="flex flex-wrap -mb-2">
                                 ${slotsHtml}
                             </div>
@@ -371,51 +376,49 @@
                 `;
             });
             
-            html += `
-                        </tbody>
-                    </table>
-                </div>
-            `;
-            
+            html += `</tbody></table></div>`;
             container.innerHTML = html;
         }
 
         // --- UI RENDERING (Cards) ---
-
         function createClassCard(cls, status) {
-            let borderClass, bgClass, textClass, icon, statusText, roomBgClass, roomTextClass;
+            let borderClass, bgClass, textClass, icon, statusText, roomBgClass, roomTextClass, titleClass;
 
             if (status === 'ongoing') {
-                borderClass = 'border-l-4 border-green-500 shadow-green-900/10 dark:shadow-green-950/20 shadow-lg';
-                bgClass = 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800';
+                borderClass = 'ring-2 ring-green-500 dark:ring-green-400 shadow-green-500/20 dark:shadow-green-900/40 shadow-xl';
+                bgClass = 'bg-white dark:bg-slate-800 border-transparent';
                 textClass = 'text-green-600 dark:text-green-400';
-                roomBgClass = 'bg-green-500/10 dark:bg-green-500/20';
+                roomBgClass = 'bg-green-50 dark:bg-green-500/10';
                 roomTextClass = 'text-green-700 dark:text-green-400';
-                icon = '<i class="ph ph-spinner-gap animate-spin text-xl"></i>';
+                titleClass = 'text-slate-900 dark:text-white';
+                icon = '<i class="ph ph-spinner-gap animate-spin text-lg"></i>';
                 statusText = 'Happening Now';
             } else if (status === 'upcoming-soon') {
-                borderClass = 'border-l-4 border-orange-500 shadow-orange-900/10 dark:shadow-orange-950/20 shadow-lg';
-                bgClass = 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800';
+                borderClass = 'ring-2 ring-orange-400 dark:ring-orange-500 shadow-orange-500/20 dark:shadow-orange-900/40 shadow-xl';
+                bgClass = 'bg-white dark:bg-slate-800 border-transparent';
                 textClass = 'text-orange-600 dark:text-orange-400';
-                roomBgClass = 'bg-orange-500/10 dark:bg-orange-500/20';
+                roomBgClass = 'bg-orange-50 dark:bg-orange-500/10';
                 roomTextClass = 'text-orange-700 dark:text-orange-400';
-                icon = '<i class="ph ph-warning-circle animate-pulse text-xl"></i>';
+                titleClass = 'text-slate-900 dark:text-white';
+                icon = '<i class="ph ph-warning-circle animate-pulse-soft text-lg"></i>';
                 statusText = 'Starting Soon';
             } else if (status === 'upcoming') {
-                borderClass = 'border-l-4 border-slate-400 dark:border-slate-700 shadow-sm';
-                bgClass = 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800';
-                textClass = 'text-slate-600 dark:text-slate-300';
-                roomBgClass = 'bg-slate-100 dark:bg-slate-950';
-                roomTextClass = 'text-slate-800 dark:text-slate-100';
-                icon = '<i class="ph ph-clock text-xl"></i>';
+                borderClass = 'border border-slate-200 dark:border-slate-700 shadow-sm hover:border-slate-300 dark:hover:border-slate-600';
+                bgClass = 'bg-white dark:bg-slate-800/80';
+                textClass = 'text-blue-600 dark:text-blue-400';
+                roomBgClass = 'bg-slate-50 dark:bg-slate-900/50';
+                roomTextClass = 'text-slate-700 dark:text-slate-200';
+                titleClass = 'text-slate-800 dark:text-slate-100';
+                icon = '<i class="ph ph-clock text-lg"></i>';
                 statusText = 'Upcoming';
             } else {
-                borderClass = 'border-l-4 border-slate-300 dark:border-slate-800 opacity-60 grayscale-[40%]';
-                bgClass = 'bg-slate-100/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800/60';
+                borderClass = 'border border-slate-200 dark:border-slate-800 opacity-60';
+                bgClass = 'bg-slate-50 dark:bg-slate-900/30';
                 textClass = 'text-slate-500 dark:text-slate-500';
-                roomBgClass = 'bg-slate-200/50 dark:bg-slate-950/40';
-                roomTextClass = 'text-slate-500 dark:text-slate-500';
-                icon = '<i class="ph ph-check-circle text-xl"></i>';
+                roomBgClass = 'bg-slate-100/50 dark:bg-slate-950/50';
+                roomTextClass = 'text-slate-400 dark:text-slate-600';
+                titleClass = 'text-slate-500 dark:text-slate-400';
+                icon = '<i class="ph ph-check-circle text-lg"></i>';
                 statusText = 'Ended';
             }
 
@@ -424,33 +427,33 @@
             const instructorDisplay = cls.instructor || 'Not Assigned';
 
             return `
-                <div class="${bgClass} ${borderClass} rounded-r-2xl flex overflow-hidden transition-all duration-300 hover:scale-[1.01] hover:shadow-md">
+                <div class="${bgClass} ${borderClass} rounded-2xl flex overflow-hidden transition-all duration-300 hover:-translate-y-1">
                     <!-- Left Column: Room -->
-                    <div class="w-1/3 ${roomBgClass} flex flex-col items-center justify-center p-3 border-r border-slate-200 dark:border-slate-800/50 min-h-[110px]">
-                        <span class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1 text-center">Room</span>
-                        <span class="text-2xl md:text-3xl font-black ${roomTextClass} text-center leading-none break-all px-1">${roomDisplay}</span>
+                    <div class="w-1/3 sm:w-1/4 ${roomBgClass} flex flex-col items-center justify-center p-4 border-r border-slate-100 dark:border-slate-700/50 min-h-[120px]">
+                        <span class="text-[10px] uppercase tracking-widest text-slate-400 dark:text-slate-500 font-bold mb-1.5 text-center">Room</span>
+                        <span class="text-2xl sm:text-3xl font-black ${roomTextClass} text-center leading-none break-all tracking-tight">${roomDisplay}</span>
                     </div>
                     
                     <!-- Right Column: Details -->
-                    <div class="w-2/3 p-4 flex flex-col justify-between">
+                    <div class="w-2/3 sm:w-3/4 p-5 sm:p-6 flex flex-col justify-center">
                         <div class="flex justify-between items-start mb-3 gap-2 flex-wrap">
-                            <div class="flex items-center space-x-1.5 ${textClass} font-semibold text-xs tracking-wide">
+                            <div class="flex items-center space-x-1.5 ${textClass} font-bold text-xs uppercase tracking-wider">
                                 ${icon} <span>${statusText}</span>
                             </div>
-                            <div class="text-[10px] font-mono bg-slate-100 dark:bg-slate-950 px-2 py-1 rounded text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-800 whitespace-nowrap">
+                            <div class="text-[11px] font-mono font-medium bg-slate-100 dark:bg-slate-900 px-2.5 py-1 rounded-md text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700/50 whitespace-nowrap shadow-sm">
                                 ${cls.startTimeStr} - ${cls.endTimeStr}
                             </div>
                         </div>
                         
                         <div>
-                            <div class="flex items-center space-x-2 mb-1.5 flex-wrap gap-y-1">
-                                <h3 class="text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-100 leading-tight">${cls.course}</h3>
-                                <span class="text-[9px] font-bold px-1.5 py-0.5 rounded-sm ${classType === 'Lab' ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'} uppercase tracking-wider">${classType}</span>
+                            <div class="flex items-center space-x-3 mb-2 flex-wrap gap-y-1">
+                                <h3 class="text-xl sm:text-2xl font-bold ${titleClass} leading-tight">${cls.course}</h3>
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-md ${classType === 'Lab' ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300' : 'bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300'} uppercase tracking-wider">${classType}</span>
                             </div>
                             
-                            <div class="flex items-center text-slate-500 dark:text-slate-400 text-sm mt-1">
-                                <i class="ph ph-user-circle mr-1.5 text-lg flex-shrink-0"></i>
-                                <span class="text-slate-700 dark:text-slate-300 font-medium truncate">${instructorDisplay}</span>
+                            <div class="flex items-center text-slate-500 dark:text-slate-400 text-sm">
+                                <i class="ph ph-user-circle mr-1.5 text-lg opacity-70"></i>
+                                <span class="font-medium truncate">${instructorDisplay}</span>
                             </div>
                         </div>
                     </div>
@@ -464,27 +467,32 @@
 
             if (isFreeDay) {
                 html = `
-                    <div class="text-center py-16 animate-fade-in bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8">
-                        <i class="ph ph-coffee text-6xl text-slate-400 dark:text-slate-600 mb-4 block"></i>
-                        <h2 class="text-2xl font-bold text-slate-700 dark:text-slate-300">No classes scheduled!</h2>
-                        <p class="text-slate-500 mt-2">Enjoy your free time.</p>
+                    <div class="text-center py-20 animate-fade-in bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 rounded-[2rem] p-8 shadow-sm">
+                        <div class="w-20 h-20 bg-slate-50 dark:bg-slate-900 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="ph ph-coffee text-4xl text-slate-400 dark:text-slate-500"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-slate-700 dark:text-slate-200">No classes scheduled!</h2>
+                        <p class="text-slate-500 dark:text-slate-400 mt-2 font-medium">Enjoy your free time.</p>
                     </div>
                 `;
             } else {
                 if (ongoing) {
                     html += `
-                        <div class="animate-fade-in">
-                            <h2 class="text-xs uppercase tracking-widest text-slate-500 font-bold mb-3 pl-1">Current</h2>
+                        <div class="animate-fade-in mb-8">
+                            <h2 class="text-[11px] uppercase tracking-widest text-slate-400 dark:text-slate-500 font-bold mb-4 pl-2 flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                                Current Class
+                            </h2>
                             ${createClassCard(ongoing, ongoing.renderStatus)}
                         </div>
                     `;
                 }
 
                 if (upcoming.length > 0) {
-                    const headerText = isToday ? "Next Up" : "Scheduled";
+                    const headerText = isToday ? "Next Up" : "Scheduled Classes";
                     html += `
-                        <div class="animate-fade-in" style="animation-delay: 0.1s">
-                            <h2 class="text-xs uppercase tracking-widest text-slate-500 font-bold mb-3 pl-1 mt-6">${headerText}</h2>
+                        <div class="animate-fade-in mb-8" style="animation-delay: 0.1s">
+                            <h2 class="text-[11px] uppercase tracking-widest text-slate-400 dark:text-slate-500 font-bold mb-4 pl-2">${headerText}</h2>
                             <div class="space-y-4">
                                 ${upcoming.map(cls => createClassCard(cls, cls.renderStatus)).join('')}
                             </div>
@@ -496,7 +504,7 @@
                     const headerText = isToday ? "Completed Today" : "Completed";
                     html += `
                         <div class="animate-fade-in" style="animation-delay: 0.2s">
-                            <h2 class="text-xs uppercase tracking-widest text-slate-500 dark:text-slate-600 font-bold mb-3 pl-1 mt-6">${headerText}</h2>
+                            <h2 class="text-[11px] uppercase tracking-widest text-slate-400 dark:text-slate-500 font-bold mb-4 pl-2">${headerText}</h2>
                             <div class="space-y-4">
                                 ${ended.map(cls => createClassCard(cls, cls.renderStatus)).join('')}
                             </div>
@@ -558,9 +566,7 @@
         // User Selector
         document.getElementById('user-selector').addEventListener('change', (e) => {
             currentUser = e.target.value;
-            // Save preference to local storage
             localStorage.setItem('selectedUser', currentUser);
-            // Reset to today when changing user
             manualDate = null; 
             updateApp();
         });
@@ -577,16 +583,17 @@
             
             // Trigger animation frame for CSS transition
             requestAnimationFrame(() => {
+                modalOverlay.classList.remove('opacity-0');
                 modalContent.classList.remove('scale-95', 'opacity-0');
                 modalContent.classList.add('scale-100', 'opacity-100');
             });
         }
 
         function closeModal() {
+            modalOverlay.classList.add('opacity-0');
             modalContent.classList.remove('scale-100', 'opacity-100');
             modalContent.classList.add('scale-95', 'opacity-0');
             
-            // Wait for transition to finish before hiding
             setTimeout(() => {
                 modalOverlay.classList.add('hidden');
             }, 300);
@@ -599,15 +606,12 @@
         });
 
         // --- INITIALIZATION ---
-        
         function populateUserDropdown() {
             if(!globalData) return;
             const selector = document.getElementById('user-selector');
             selector.innerHTML = '';
             
             const users = Object.keys(globalData);
-            
-            // Check if there is a saved preference
             const savedUser = localStorage.getItem('selectedUser');
             
             users.forEach(user => {
@@ -617,27 +621,27 @@
                 selector.appendChild(option);
             });
             
-            // Set current user
             if(savedUser && users.includes(savedUser)) {
                 currentUser = savedUser;
             } else if (users.length > 0) {
                 currentUser = users[0];
             }
-            
             selector.value = currentUser;
         }
 
         async function loadDataAndStart() {
+            // Update clock immediately
+            let hours = new Date().getHours();
+            let minutes = new Date().getMinutes();
+            document.getElementById('time-display').innerText = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+
             try {
-                // Fallback prevents CORS errors locally
-                const protocol = window.location.protocol;
-                if (protocol === 'blob:' || protocol === 'data:' || protocol === 'file:') {
-                    console.log("Running locally. Using fetch but expecting failure if strict CORS.");
-                }
+                // Fetch the routine.json (Cache-busting appended to bypass GitHub Pages aggressive caching)
+                const cacheBuster = new Date().getTime();
+                const response = await fetch(`routine.json?v=${cacheBuster}`);
                 
-                // Fetch the new routine.json (Updated to match your actual file name)
-                const response = await fetch('routine.json');
-                if (!response.ok) throw new Error('Could not fetch routine.json');
+                if (!response.ok) throw new Error(`Could not fetch routine.json (Status: ${response.status})`);
+                
                 globalData = await response.json();
                 
                 populateUserDropdown();
@@ -647,10 +651,13 @@
             } catch (error) {
                 console.error("Error loading JSON:", error);
                 document.getElementById('routine-container').innerHTML = `
-                    <div class="text-center py-10 animate-fade-in text-red-500 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-900/30 rounded-2xl m-4">
-                        <i class="ph ph-warning-circle text-4xl mb-2"></i>
-                        <p class="font-medium">Failed to load routine data.</p>
-                        <p class="text-sm mt-2 text-red-400">Make sure <span class="font-mono bg-red-100 dark:bg-red-900/50 px-1 rounded">routine.json</span> is uploaded.</p>
+                    <div class="text-center py-12 animate-fade-in bg-white dark:bg-slate-800/50 border border-red-200 dark:border-red-900/30 rounded-[2rem] p-8 shadow-sm">
+                        <div class="w-16 h-16 bg-red-50 dark:bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="ph ph-warning-circle text-3xl text-red-500"></i>
+                        </div>
+                        <h2 class="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2">Failed to load routine</h2>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm">Please ensure <code class="bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-red-500">routine.json</code> is uploaded.</p>
+                        <p class="text-xs text-slate-400 mt-4 opacity-70 border-t border-slate-100 dark:border-slate-700/50 pt-4">${error.message}</p>
                     </div>`;
             }
         }
